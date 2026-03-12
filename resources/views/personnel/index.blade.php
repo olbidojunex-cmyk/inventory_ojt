@@ -1,9 +1,14 @@
-<html>
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+       
+        </h2>
+    </x-slot>
     <div class="personnel-form">
 
       <div class="personnel-form">
 
-        <form action="{{ route('personnel.store') }}" method="POST">
+        <form action="" method="POST">
             @csrf
 
             <select name="branch_name" id="">
@@ -25,5 +30,4 @@
         @endif
 </div>
     </div>
-</body>
-</html>
+</x-app-layout>

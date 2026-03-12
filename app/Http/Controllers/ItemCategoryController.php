@@ -13,8 +13,8 @@ class ItemCategoryController extends Controller
     public function index()
     {
         $item_categories = ItemCategory::All();
-
-        return view('inventory.index', compact('item_categories'));
+        $item_categories = ItemCategory::orderBy('created_at', 'desc')->get();
+        return view('item.index', compact('item_categories'));
     }
 
     /**
@@ -28,17 +28,17 @@ class ItemCategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+   public function store(Request $request)
     {
-        $request ->validate([
-            'item_category_name' => 'string|max:255',
+        $request->validate([
+            'item_category_name' => 'required|string|max:255|unique:item_categories,item_category_name',
         ]);
 
         ItemCategory::create([
             'item_category_name' => $request->item_category_name
         ]);
 
-        return redirect()->back()->with('success','nadawat na nimo nigga');
+        return redirect('/inventory')->with('success','Category added successfully.');
     }
 
     /**

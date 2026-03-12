@@ -37,7 +37,6 @@ class PersonnelController extends Controller
             'branch_department' => 'string|max:255',
             'personnel_name' => '|string|max:255',
            
-           
         ]);
 
         // Create branch

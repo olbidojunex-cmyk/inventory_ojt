@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PersonnelController;
 use App\Http\Controllers\ItemCategoryController;
+use App\Http\Controllers\ItemController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -19,8 +20,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::resource('personnel', PersonnelController::class);
+Route::resource('outbound', PersonnelController::class);
 
-Route::resource('inventory', ItemCategoryController::class);
+// Route::resource('inventory', ItemCategoryController::class);
+Route::resource('inventory', ItemController::class);
+Route::post('/item-category/store', [ItemController::class, 'storeCategory'])->name('item-category.store');
 
 require __DIR__.'/auth.php';

@@ -6,5 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class ItemBrand extends Model
 {
-    //
+    protected $fillable = [
+        'item_brand_name'
+    ];
+
+    public function item(){
+        return $this->hasMany(Item::class, 'item_brand_id');
+    }
 }

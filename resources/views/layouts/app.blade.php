@@ -6,7 +6,9 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>Goldtown | Inventory Tracking</title>
-
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600|poppins:400,500,600&display=swap" rel="stylesheet" />
 
@@ -16,10 +18,12 @@
                ============================================ */
             :root {
                 --primary-color: #0d324d;
+                --primary-hover: #082235;
                 --text-color: #333333;
                 --bg-color: #f8f9fa;
                 --white: #ffffff;
                 --transition-speed: 0.3s;
+                --max-layout-width: 1700px; 
             }
 
             * {
@@ -29,18 +33,16 @@
             }
 
             body {
-                font-family: 'Figtree', sans-serif;
+                font-family: 'poppins', Arial, Helvetica, sans-serif;
                 background-color: var(--bg-color);
                 color: var(--text-color);
-                /* Ensure body takes full height for sticky footer */
-                min-height: 100vh;
+                font-size: 18px; 
+                min-height: 950px; 
                 display: flex;
                 flex-direction: column;
+                margin: 0 auto;
             }
 
-            /* ============================================
-               Global Slide-Up Loading Screen (Your existing code)
-               ============================================ */
             #global-loader {
                 position: fixed;
                 top: 0;
@@ -84,8 +86,8 @@
 
             .loading-text {
                 font-family: 'Poppins', sans-serif;
-                font-size: 16px;
-                font-weight: 500;
+                font-size: 20px; 
+                font-weight: 600;
                 color: var(--white);
                 letter-spacing: 2px;
                 animation: textPulse 2s infinite ease-in-out;
@@ -105,7 +107,7 @@
             }
 
             /* ============================================
-               Header / Navigation
+               Header & Navigation
                ============================================ */
             .modern-header {
                 background-color: var(--white);
@@ -116,41 +118,45 @@
             }
 
             .nav-container {
-                max-width: 1200px;
+                max-width: var(--max-layout-width);
                 margin: 0 auto;
                 padding: 0 20px;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                height: 70px;
+                height: 100px; /* Taller to fit the larger logo */
             }
 
-            .logo {
-                font-family: 'Poppins', sans-serif;
-                font-size: 22px;
-                font-weight: 600;
-                color: var(--primary-color);
-                text-decoration: none;
+            .nav-logo {
                 display: flex;
                 align-items: center;
-                gap: 10px;
+            }
+
+            .nav-logo img {
+                height: 90px; /* Increased size of the logo */
+                width: auto;
+                object-fit: contain;
             }
 
             .nav-menu {
                 display: flex;
+                align-items: center;
                 list-style: none;
-                gap: 30px;
+                gap: 35px; 
+                margin: 0;
             }
 
             .nav-link {
                 text-decoration: none;
                 color: var(--text-color);
                 font-weight: 500;
+                font-size: 1.1rem; 
                 transition: color var(--transition-speed);
                 position: relative;
+                padding: 5px 0;
             }
 
-            .nav-link:hover {
+            .nav-link:hover, .nav-link.active {
                 color: var(--primary-color);
             }
 
@@ -159,19 +165,44 @@
                 position: absolute;
                 width: 0;
                 height: 2px;
-                bottom: -4px;
+                bottom: 0;
                 left: 0;
                 background-color: var(--primary-color);
                 transition: width var(--transition-speed);
             }
 
-            .nav-link:hover::after {
+            .nav-link:hover::after, .nav-link.active::after {
                 width: 100%;
             }
 
+            .logout-item {
+                display: flex;
+                align-items: center;
+            }
+
+            .logout-btn {
+                background-color: var(--primary-color);
+                color: var(--white);
+                border: none;
+                padding: 10px 22px; 
+                border-radius: 6px;
+                font-family: inherit;
+                font-size: 1.05rem; 
+                font-weight: 600;
+                cursor: pointer;
+                transition: background-color var(--transition-speed);
+            }
+
+            .logout-btn:hover {
+                background-color: var(--primary-hover);
+            }
+
             /* Hamburger Menu (Mobile) */
+            .header-actions {
+                display: none; 
+            }
+
             .hamburger {
-                display: none;
                 cursor: pointer;
                 background: none;
                 border: none;
@@ -180,9 +211,9 @@
 
             .hamburger-line {
                 display: block;
-                width: 25px;
+                width: 30px; 
                 height: 3px;
-                margin: 5px auto;
+                margin: 6px auto;
                 background-color: var(--primary-color);
                 transition: all var(--transition-speed);
             }
@@ -191,11 +222,11 @@
                Main Content Area
                ============================================ */
             .main-content {
-                flex: 1; /* Pushes footer to the bottom */
-                max-width: 1200px;
+                flex: 1; 
+                max-width: var(--max-layout-width);
                 margin: 0 auto;
                 width: 100%;
-                padding: 40px 20px;
+                padding: 40px 20px 120px 20px; 
             }
 
             /* ============================================
@@ -204,64 +235,58 @@
             .modern-footer {
                 background-color: var(--primary-color);
                 color: var(--white);
-                padding: 30px 20px;
+                padding: 20px 5px;
                 text-align: center;
-                margin-top: auto; /* Ensures it stays at the bottom */
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                z-index: 1000;
             }
 
             .footer-content {
-                max-width: 1200px;
+                max-width: var(--max-layout-width);
                 margin: 0 auto;
                 display: flex;
                 flex-direction: column;
                 gap: 10px;
             }
 
-            .footer-links {
-                display: flex;
-                justify-content: center;
-                gap: 20px;
-                list-style: none;
-                margin-top: 10px;
-            }
-
-            .footer-links a {
-                color: var(--white);
-                text-decoration: none;
-                font-size: 14px;
-                opacity: 0.8;
-                transition: opacity var(--transition-speed);
-            }
-
-            .footer-links a:hover {
-                opacity: 1;
+            .footer-content h4 {
+                font-size: 1.2rem; 
+                margin: 0;
             }
 
             .footer-copy {
-                font-size: 14px;
-                opacity: 0.7;
-                margin-top: 15px;
+                font-size: 14px; 
+                opacity: 0.8;
+                margin-top: 5px;
             }
 
             /* ============================================
                Responsive Design
                ============================================ */
             @media (max-width: 768px) {
-                .hamburger {
-                    display: block;
+                body {
+                    min-height: 100vh;
+                }
+
+                .header-actions {
+                    display: flex;
+                    align-items: center;
                 }
 
                 .nav-menu {
                     position: absolute;
-                    top: 70px;
+                    top: 100px; /* Matched to the new taller header height */
                     left: -100%;
                     flex-direction: column;
                     background-color: var(--white);
                     width: 100%;
                     text-align: center;
-                    transition: 0.3s;
+                    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                     box-shadow: 0 10px 10px rgba(0,0,0,0.05);
-                    padding: 20px 0;
+                    padding: 30px 0; 
                     gap: 0;
                 }
 
@@ -270,18 +295,29 @@
                 }
 
                 .nav-menu li {
-                    margin: 15px 0;
+                    margin: 20px 0; 
+                }
+
+                .logout-item {
+                    justify-content: center;
+                    margin-top: 15px;
+                }
+
+                .logout-btn {
+                    width: 80%; 
+                    padding: 12px;
+                    font-size: 1.1rem;
                 }
 
                 /* Hamburger Animation */
                 .hamburger.active .hamburger-line:nth-child(1) {
-                    transform: translateY(8px) rotate(45deg);
+                    transform: translateY(9px) rotate(45deg);
                 }
                 .hamburger.active .hamburger-line:nth-child(2) {
                     opacity: 0;
                 }
                 .hamburger.active .hamburger-line:nth-child(3) {
-                    transform: translateY(-8px) rotate(-45deg);
+                    transform: translateY(-9px) rotate(-45deg);
                 }
             }
         </style>
@@ -298,43 +334,54 @@
 
         <header class="modern-header">
             <nav class="nav-container">
-                <a href="/" class="logo">
-                    Goldtown
+                
+                <a href="/" class="nav-logo">
+                    <img src="{{ asset('storage/img/login-logo.png') }}" alt="Goldtown Logo">
                 </a>
                 
                 <ul class="nav-menu">
-                    <li><a href="/" class="nav-link">Dashboard</a></li>
-                    <li><a href="/inventory" class="nav-link">Inventory</a></li>
-                    <li><a href="/reports" class="nav-link">Reports</a></li>
-                    <li><a href="/settings" class="nav-link">Settings</a></li>
+                    <li><a href="/dashboard" class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}">Dashboard</a></li>
+                    <li><a href="/inventory" class="nav-link {{ request()->is('inventory') ? 'active' : '' }}">Inventory</a></li>
+                    <li><a href="/outbound" class="nav-link {{ request()->is('outbound') ? 'active' : '' }}">Outbound</a></li>
+                    <li><a href="/settings" class="nav-link {{ request()->is('settings*') ? 'active' : '' }}">Settings</a></li>
+                    
+                    <li class="logout-item">
+                        <form id="logout-form" method="POST" action="{{ route('logout') }}" style="margin: 0; width: 100%;">
+                            @csrf
+
+                          <button type="button" class="logout-btn" onclick="confirmLogout()">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </button>
+                        </form>
+                    </li>
                 </ul>
 
-                <button class="hamburger" aria-label="Toggle Navigation">
-                    <span class="hamburger-line"></span>
-                    <span class="hamburger-line"></span>
-                    <span class="hamburger-line"></span>
-                </button>
+                <div class="header-actions">
+                    <button class="hamburger" aria-label="Toggle Navigation">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </button>
+                </div>
+
             </nav>
         </header>
 
         <main class="main-content">
-            @yield('content')
+           {{$slot}}
         </main>
 
         <footer class="modern-footer">
             <div class="footer-content">
-                <h3>Goldtown Inventory</h3>
-                <p style="font-size: 14px; opacity: 0.8;">Streamlining your tracking process.</p>
-                <ul class="footer-links">
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                    <li><a href="#">Support</a></li>
-                </ul>
+                <h4>Goldtown Inventory</h4>
                 <div class="footer-copy">
-                    &copy; {{ date('Y') }} Goldtown. All rights reserved.
+                    &copy; 2026 Goldtown. All rights reserved.
                 </div>
             </div>
         </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
         <script>
             // Loader Logic
@@ -357,13 +404,71 @@
                 navMenu.classList.toggle("active");
             });
 
-            // Close mobile menu when a link is clicked
             navLinks.forEach(link => {
                 link.addEventListener("click", () => {
                     hamburger.classList.remove("active");
                     navMenu.classList.remove("active");
                 });
             });
+
+            function confirmLogout() {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You will be logged out of your session.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#0d324d', // Matches your primary color
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, logout',
+                    cancelButtonText: 'No, cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Submit the form if the user clicks 'Yes'
+                        document.getElementById('logout-form').submit();
+                    }
+                })
+            }
+
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            // Trigger Toasts based on Laravel Session variables
+            @if(session('success'))
+                Toast.fire({
+                    icon: 'success',
+                    title: "{{ session('success') }}"
+                });
+            @endif
+
+            @if(session('error'))
+                Toast.fire({
+                    icon: 'error',
+                    title: "{{ session('error') }}"
+                });
+            @endif
+
+            @if(session('warning'))
+                Toast.fire({
+                    icon: 'warning',
+                    title: "{{ session('warning') }}"
+                });
+            @endif
+
+            @if(session('info'))
+                Toast.fire({
+                    icon: 'info',
+                    title: "{{ session('info') }}"
+                });
+            @endif
         </script>
     </body>
 </html>

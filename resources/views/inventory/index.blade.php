@@ -8,11 +8,9 @@
     </style>
 
     <body>
-        <div class="inventory_form container mt-4">
+        <div class="inventory_form container-fluid px-4 mt-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <!-- Buttons on the left -->
                 <div class="d-flex flex-column gap-2">
-                    <!-- Top row buttons -->
                     <div class="d-flex gap-2">
                         <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal"
                             data-bs-target="#category_modal">
@@ -24,17 +22,13 @@
                         </button>
                     </div>
 
-                    <!-- Delete button below -->
                     <button id="bulk_delete_btn" class="btn btn-danger" disabled>
                         <i class="bi bi-trash"></i>
                         Delete Selected
                     </button>
                 </div>
 
-
-                <!-- Right Column: Search, Filters, Export -->
                 <div class="w-5">
-                    <!-- Top Row: Search Bar -->
                     <div class="mb-2">
                         <div class="input-group w-100">
                             <input type="text" id="inventorySearch" class="form-control"
@@ -45,7 +39,6 @@
                         </div>
                     </div>
 
-                    <!-- Middle Row: Dropdown Filters (Horizontal) -->
                     <div class="d-flex gap-2 mb-3">
                         <select name="remark" class="form-select form-select-sm" style="min-width: 120px;">
                             <option value="">All Remarks</option>
@@ -80,7 +73,6 @@
                         </select>
                     </div>
 
-                    <!-- Bottom Row: Export Buttons -->
                     <div class="d-flex gap-2 flex-wrap">
                         <a href="{{ route('inventory.index', ['export' => 'pdf', 'search' => request('search')]) }}"
                             class="btn btn-danger d-flex align-items-center gap-1" target="_blank">
@@ -96,26 +88,21 @@
 
             </div>
 
-            <!-- Modal -->
             <div class="modal fade" id="category_modal" tabindex="-1">
                 <div class="modal-dialog">
                     <div class="modal-content">
 
-                        <!-- Modal Header -->
                         <div class="modal-header">
                             <h4 class="modal-title">Create Category</h4>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
 
-                        <!-- Modal Form -->
                         <form action="{{ route('item-category.store') }}" method="POST" class="needs-validation"
                             novalidate>
                             @csrf
 
-                            <!-- Modal Body -->
                             <div class="modal-body">
 
-                                <!-- Category Input -->
                                 <div class="form-floating mb-3">
                                     <input type="text" class="form-control" id="category_name"
                                         name="item_category_name" placeholder="Enter Category" required>
@@ -125,7 +112,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Category Dropdown -->
                                 <div class="mb-3">
                                     <label class="form-label">Show all Category:</label>
                                     <select name="item_category_id" class="form-control">
@@ -139,7 +125,6 @@
 
                             </div>
 
-                            <!-- Modal Footer -->
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-outline-light text-dark"
                                     data-bs-dismiss="modal">Cancel</button>
@@ -156,20 +141,17 @@
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
 
-                        <!-- Modal Header -->
                         <div class="modal-header">
                             <h4 class="modal-title">Add New Item</h4>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
 
-                        <!-- Modal body -->
                         <form action="{{ route('inventory.store') }}" method="POST" class="needs-validation"
                             novalidate>
                             @csrf
 
                             <div class="modal-body">
 
-                                <!-- Item Name (required) -->
                                 <div class="form-floating mb-3">
                                     <input type="text" name="item_name" class="form-control" id="item_name"
                                         placeholder="Item Name" required>
@@ -179,14 +161,12 @@
                                     </div>
                                 </div>
 
-                                <!-- Serial Number (optional) -->
                                 <div class="form-floating mb-3">
                                     <input type="text" name="item_serialno" class="form-control"
                                         id="item_serialno" placeholder="Serial Number">
                                     <label for="item_serialno">Serial Number (Optional)</label>
                                 </div>
 
-                                <!-- Unit of Measure (optional) -->
                                 <div class="form-floating mb-3">
                                     <select name="item_uom_name" class="form-select" id="item_uom_name">
                                         <option value="" disabled>Select Unit of Measure</option>
@@ -200,7 +180,6 @@
                                     <label for="item_uom_name">Unit of Measure</label>
                                 </div>
 
-                                <!-- Quantity (optional) -->
                                 <div class="form-floating mb-3">
                                     <input type="number" name="item_quantity" class="form-control"
                                         id="item_quantity" placeholder="Quantity" min="1" max="99"
@@ -211,7 +190,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Remark (optional) -->
                                 <div class="form-floating mb-3">
                                     <select name="item_remark" class="form-select" id="item_remark" required>
                                         <option value="" disabled>Select Remark</option>
@@ -222,7 +200,6 @@
                                     <label for="item_remark">Remark</label>
                                 </div>
 
-                                <!-- Category (required) -->
                                 <div class="form-floating mb-3">
                                     <select name="item_category_id" class="form-select" id="item_category_id"
                                         required>
@@ -238,7 +215,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Brand (optional) -->
                                 <div class="form-floating mb-3">
                                     <select name="item_brand_name" class="form-select" id="item_brand_name" required>
                                         <option value="" disabled selected>Select Brand</option>
@@ -294,9 +270,7 @@
 
 
 
-                            </div> <!-- /.modal-body -->
-
-                            <div class="modal-footer">
+                            </div> <div class="modal-footer">
                                 <button type="button" class="btn btn-outline-light text-dark"
                                     data-bs-dismiss="modal">Cancel</button>
                                 <button type="submit" class="btn btn-success">Submit</button>
@@ -307,30 +281,36 @@
                 </div>
             </div>
 
-            <table class="table table-striped">
-                <thead class="table-light">
-                    <tr>
-                        <th>
-                            <input type="checkbox" id="select_all">
-                        </th>
-                        <th>Product Name</th>
-                        <th>Category</th>
-                        <th>Brand Name</th>
-                        <th>Serial Number</th>
-                        <th>Unit of Measure</th>
-                        <th>Quantity</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="table-data">
-                    @include('inventory.inventory-table')
-                </tbody>
-            </table>
+            <div class="table-responsive w-100">
+                <table class="table table-striped w-100">
+                    <thead class="table-light">
+                        <tr>
+                            <th>
+                                <input type="checkbox" id="select_all">
+                            </th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Brand Name</th>
+                            <th>Serial Number</th>
+                            <th>Unit of Measure</th>
+                            <th>Quantity</th>
+                            <th>Quantity Remaining</th>
+                            <th>Quantity Status</th>
+                            <th>Item Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-data">
+                        @include('inventory.inventory-table')
+                    </tbody>
+                </table>
+            </div>
+            
             <div class="d-flex justify-content-center mt-3">
                 {{ $items->links('pagination::bootstrap-4') }}
             </div>
-    </body>
+        </div> </body>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>

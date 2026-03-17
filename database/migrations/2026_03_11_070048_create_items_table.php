@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('item_name');
             $table->string('item_serialno')->nullable();
             $table->integer('item_quantity');
+            $table->integer('item_quantity_remaining');
+            $table->string('item_quantity_status');
             $table->string('item_remark');
             $table->timestamps();
 

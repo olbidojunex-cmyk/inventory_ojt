@@ -23,7 +23,8 @@
                 --bg-color: #f8f9fa;
                 --white: #ffffff;
                 --transition-speed: 0.3s;
-                --max-layout-width: 1700px; 
+                /* CHANGED: Swapped 1700px for 100% to make the layout full-width */
+                --max-layout-width: 100%; 
             }
 
             * {
@@ -230,7 +231,7 @@
                 max-width: var(--max-layout-width);
                 margin: 0 auto;
                 width: 100%;
-                padding: 40px 20px 120px 20px; 
+                padding: 40px 99px 120px 99px; 
             }
 
             /* ============================================
@@ -346,7 +347,7 @@
                 <ul class="nav-menu">
                     <li><a href="/dashboard" class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}">Dashboard</a></li>
                     <li><a href="/inventory" class="nav-link {{ request()->is('inventory') ? 'active' : '' }}">Inventory</a></li>
-                    <li><a href="/outbound" class="nav-link {{ request()->is('outbound') ? 'active' : '' }}">Outbound</a></li>
+                    <li><a href="/outbound" class="nav-link {{ request()->is('outbound') ? 'active' : '' }}">Issued Items</a></li>
                     <li><a href="/settings" class="nav-link {{ request()->is('settings*') ? 'active' : '' }}">Settings</a></li>
                     
                     <li class="logout-item">

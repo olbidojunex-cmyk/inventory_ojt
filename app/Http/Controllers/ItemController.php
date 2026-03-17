@@ -136,7 +136,7 @@ class ItemController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-  public function store(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             'item_name'        => 'required|string|max:255',
@@ -163,15 +163,20 @@ class ItemController extends Controller
             return redirect()->back()->withErrors(['duplicate' => 'This item already exists with the same name, brand, UOM, and remark.']);
         }
 
+        // Determine initial quantity status
+        $quantityStatus = $request->item_quantity > 0 ? 'Available' : 'Out of Stock';
+
         // Create Item
         Item::create([
-            'item_name'        => $request->item_name,
-            'item_serialno'    => $request->item_serialno,
-            'item_quantity'    => $request->item_quantity,
-            'item_remark'      => $request->item_remark,
-            'item_category_id' => $request->item_category_id,
-            'item_uom_id'      => $uom->item_uom_id,
-            'item_brand_id'    => $brand->item_brand_id,
+            'item_name'               => $request->item_name,
+            'item_serialno'           => $request->item_serialno,
+            'item_quantity'           => $request->item_quantity,
+            'item_quantity_remaining' => $request->item_quantity,
+            'item_quantity_status'    => $quantityStatus,
+            'item_remark'             => $request->item_remark,
+            'item_category_id'        => $request->item_category_id,
+            'item_uom_id'             => $uom->item_uom_id,
+            'item_brand_id'           => $brand->item_brand_id,
         ]);
 
         return redirect()->back()->with('success', 'Item added successfully');
@@ -208,35 +213,68 @@ class ItemController extends Controller
     /**
      * Update the specified resource in storage.
      */
-  public function update(Request $request, $item_id)
-{
-    $item = Item::findOrFail($item_id);
+    public function update(Request $request, $item_id)
+    {
+        $item = Item::findOrFail($item_id);
 
-    $item->item_name = $request->item_name;
-    $item->item_serialno = $request->item_serialno; // added
-    $item->item_quantity = $request->item_quantity;
-    $item->item_remark = $request->item_remark;
-
-    // Brand
-    if ($request->item_brand_name) {
-        $brand = ItemBrand::firstOrCreate([
-            'item_brand_name' => $request->item_brand_name
+        // Validate input
+        $request->validate([
+            'item_name' => 'required|string|max:255',
+            'item_serialno' => 'nullable|string|max:255',
+            'item_quantity' => 'required|integer|min:0',
+            'item_remark' => 'nullable|string|max:500',
+            'item_brand_name' => 'nullable|string|max:255',
+            'item_uom_name' => 'nullable|string|max:255',
         ]);
-        $item->item_brand_id = $brand->item_brand_id;
+
+        // Prevent lowering total quantity below current total
+        if ($request->item_quantity < $item->item_quantity) {
+            return redirect()->back()->with('error', "Cannot decrease total quantity below current total ({$item->item_quantity}).");
+        }
+
+        // Calculate how much the total increased
+        $difference = $request->item_quantity - $item->item_quantity;
+
+        // Increment remaining stock by the difference
+        $item->item_quantity_remaining += $difference;
+
+        // Update total quantity
+        $item->item_quantity = $request->item_quantity;
+
+        // Update other fields
+        $item->item_name = $request->item_name;
+        $item->item_serialno = $request->item_serialno;
+        $item->item_remark = $request->item_remark;
+
+        // Update Brand if provided
+        if ($request->item_brand_name) {
+            $brand = ItemBrand::firstOrCreate([
+                'item_brand_name' => $request->item_brand_name
+            ]);
+            $item->item_brand_id = $brand->item_brand_id;
+        }
+
+        // Update Unit of Measure if provided
+        if ($request->item_uom_name) {
+            $uom = ItemUom::firstOrCreate([
+                'item_uom_name' => $request->item_uom_name
+            ]);
+            $item->item_uom_id = $uom->item_uom_id;
+        }
+
+        // Update quantity status
+        if ($item->item_quantity_remaining == 0) {
+            $item->item_quantity_status = 'Out of Stock';
+        } elseif ($item->item_quantity_remaining < ($item->item_quantity * 0.2)) {
+            $item->item_quantity_status = 'Low Stock';
+        } else {
+            $item->item_quantity_status = 'Available';
+        }
+
+        $item->save();
+
+        return redirect()->back()->with('success', 'Item updated successfully.');
     }
-
-    // Unit of Measure
-    if ($request->item_uom_name) {
-        $uom = ItemUom::firstOrCreate([
-            'item_uom_name' => $request->item_uom_name
-        ]);
-        $item->item_uom_id = $uom->item_uom_id;
-    }
-
-    $item->save();
-
-    return redirect()->back()->with('success', 'Item updated successfully.');
-}
     /**
      * Remove the specified resource from storage.
      */

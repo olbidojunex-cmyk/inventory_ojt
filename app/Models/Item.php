@@ -12,6 +12,8 @@ class Item extends Model
         'item_serialno',
         'item_quantity',
         'item_remark',
+        'item_quantity_remaining',
+        'item_quantity_status',
         'item_category_id',
         'item_brand_id',
         'item_uom_id',

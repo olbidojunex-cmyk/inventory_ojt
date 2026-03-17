@@ -28,6 +28,8 @@ class ItemsExport implements FromCollection, WithHeadings, WithStyles, WithEvent
                 'Serial No'    => $item->item_serialno,
                 'UOM'          => $item->uom->item_uom_name ?? '',
                 'Quantity'     => $item->item_quantity ?? 0,
+                'Quantity Remaining' => $item->item_quantity_remaining ?? 0,
+                'Quantity Status' => $item->item_quantity_status ?? '',
                 'Status'       => $item->item_remark ?? '',
             ];
         });
@@ -42,6 +44,8 @@ class ItemsExport implements FromCollection, WithHeadings, WithStyles, WithEvent
             'Serial Number',
             'Unit of Measure',
             'Quantity',
+            'Quantity Remaining',
+            'Quantity Status',
             'Status'
         ];
     }
@@ -85,7 +89,7 @@ class ItemsExport implements FromCollection, WithHeadings, WithStyles, WithEvent
 
                 // Conditional Status colors (column G)
                 $highestRow = $sheet->getHighestRow();
-                for ($row = 4; $row <= $highestRow; $row++) {
+                for ($row = 6; $row <= $highestRow; $row++) {
                     $status = $sheet->getCell("G$row")->getValue();
 
                     switch ($status) {

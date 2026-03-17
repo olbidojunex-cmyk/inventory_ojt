@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id('personnel_item_id');
             $table->unsignedBigInteger('item_id');
             $table->unsignedBigInteger('personnel_id');
-            $table->string('personnel_item_quantity');
-            $table->string('personnel_item_receive');
+            $table->integer('personnel_item_quantity');
+            $table->date('personnel_date_receive')->nullable();
+            $table->date('personnel_date_issued')->nullable();
             $table->string('personnel_item_remarks');
             $table->timestamps();
 

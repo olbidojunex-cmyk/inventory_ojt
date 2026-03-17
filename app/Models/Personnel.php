@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Personnel extends Model
 {
+    
        protected $fillable = [
          'branch_id',
          'personnel_name'
@@ -13,7 +14,7 @@ class Personnel extends Model
     ];
 
     public function branch(){
-        return $this->hasOne(Branch::class);
+           return $this->belongsTo(Branch::class, 'branch_id', 'branch_id');
     }
 }
 

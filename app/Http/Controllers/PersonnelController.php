@@ -16,7 +16,7 @@ class PersonnelController extends Controller
        $personnels = Personnel::All();
        $branches   = Branch::All();
 
-       return view('personnel.index', compact('personnels','branches'));
+       return view('personnelx.index', compact('personnels','branches'));
     }
 
     /**
@@ -57,6 +57,8 @@ class PersonnelController extends Controller
     /**
      * Display the specified resource.
      */
+
+    
     public function show(Personnel $personnel)
     {
         //

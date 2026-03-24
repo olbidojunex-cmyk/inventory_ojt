@@ -277,7 +277,7 @@ class PersonnelItemController extends Controller
                     'personnel_id' => $outbound->personnel_id,
                     'item_id' => $item->item_id,
                     'personnel_item_quantity' => $validated['return_quantity'],
-                    'personnel_date_receive' => now(),
+                    'personnel_date_receive' => $item->personnel_date_receive,
                     'personnel_item_remarks' => 'Returned',
                     'item_remark' => 'Good',
                 ]);
@@ -312,7 +312,7 @@ class PersonnelItemController extends Controller
                     'personnel_id' => $outbound->personnel_id,
                     'item_id' => $damagedItemId,
                     'personnel_item_quantity' => $validated['return_quantity'],
-                    'personnel_date_receive' => now(),
+                     'personnel_date_receive' => $item->personnel_date_receive,
                     'personnel_item_remarks' => 'Returned',
                     'item_remark' => 'Damaged',
                 ]);

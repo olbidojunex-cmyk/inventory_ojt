@@ -32,11 +32,10 @@
                     </button>
                 </div>
 
-                 <div class="w-5">
+                <div class="w-5">
                     <div class="mb-2">
                         <div class="input-group w-100">
-                            <input type="text" id="OutboundSearch" class="form-control"
-                                placeholder="Search item...">
+                            <input type="text" id="OutboundSearch" class="form-control" placeholder="Search item...">
                             <span class="input-group-text">
                                 <i class="bi bi-search"></i>
                             </span>
@@ -44,7 +43,8 @@
                     </div>
 
                     <div class="d-flex gap-2 mb-3">
-                          <select name="remarks" class="form-select form-select-sm" style="min-width: 120px;">
+                        <select name="remarks" class="form-select form-select-sm" style="min-width: 120px;">
+                            <option value="" disabled>Select Remark</option>
                             <option value="">All Remarks</option>
                             @foreach ($item_remarks as $remark)
                                 <option value="{{ $remark }}"
@@ -63,7 +63,8 @@
                             @endforeach
                         </select> --}}
 
-                          <select name="department" class="form-select form-select-sm" style="min-width: 150px;">
+                        <select name="department" class="form-select form-select-sm" style="min-width: 150px;">
+                            <option value="" disabled>Select Department</option>
                             <option value="">All Departments</option>
                             @foreach ($departments as $dept)
                                 <option value="{{ $dept }}"
@@ -73,7 +74,8 @@
                             @endforeach
                         </select>
 
-                       <select name="branch" class="form-select form-select-sm" style="min-width: 150px;">
+                        <select name="branch" class="form-select form-select-sm" style="min-width: 150px;">
+                            <option value="" disabled>Select Branch</option>
                             <option value="">All Branches</option>
                             @foreach ($branches as $b)
                                 <option value="{{ $b->branch_id }}"
@@ -168,7 +170,7 @@
 
         {{-- Outbound Form Modal --}}
         <div class="modal fade" id="outbound_modal" tabindex="-1">
-            <div class="modal-dialog modal-lg">
+            <div class="modal-dialog modal-xl">
                 <div class="modal-content">
 
                     <div class="modal-header">
@@ -177,75 +179,178 @@
                     </div>
 
                     <form action="{{ route('outbound.store') }}" method="POST"
-                        class="needs-validation text-confirm-submit" novalidate>
+                        class="needs-validation text-confirm-submit" id="outboundForm" novalidate>
                         @csrf
-                        <div class="modal-body">
+                        <input type="hidden" name="personnel_id" id="selected_personnel_id" required>
+                        <input type="hidden" name="item_id" id="selected_item_id" required>
 
-                            <!-- Personnel -->
-                            <div class="form-floating mb-3">
-                                <select name="personnel_id" class="form-select" id="personnel_id" required>
-                                    <option value="" disabled selected>Select Personnel</option>
-                                    @foreach ($personnels as $personnel)
-                                        <option value="{{ $personnel->personnel_id }}">
-                                            {{ $personnel->personnel_name }}</option>
-                                    @endforeach
-                                </select>
-                                <label for="personnel_id">Personnel</label>
-                                <div class="invalid-feedback">Please select a personnel.</div>
-                            </div>
+                        <div class="modal-body p-4">
+                            <div class="row g-4">
 
-                            <!-- Item -->
-                            <div class="form-floating mb-3">
-                                <select name="item_id" class="form-select" id="item_id" required>
-                                    <option value="" disabled selected>Select Item</option>
-                                    @foreach ($items as $item)
-                                        <option value="{{ $item->item_id }}">{{ $item->item_name }}</option>
-                                    @endforeach
-                                </select>
-                                <label for="item_id">Item</label>
-                                <div class="invalid-feedback">Please select an item.</div>
-                            </div>
+                                <div class="col-md-4 border-end pe-md-3">
+                                    <h6 class="text-muted mb-3"><i class="bi bi-person-badge me-1"></i> 1. Select
+                                        Personnel</h6>
 
-                            <!-- Quantity -->
-                            <div class="form-floating mb-3">
-                                <input type="number" name="personnel_item_quantity" class="form-control"
-                                    id="personnel_item_quantity" placeholder="Quantity" min="1" required>
-                                <label for="personnel_item_quantity">Quantity</label>
-                                <div class="invalid-feedback">Quantity is required and must be at least 1.</div>
-                            </div>
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                                        <input type="text" id="personnelSearch" class="form-control"
+                                            placeholder="Search name or ID...">
+                                    </div>
 
-                            <!-- Date Issued -->
-                            <div class="form-floating mb-3">
-                                <input type="date" name="personnel_date_issued" class="form-control"
-                                    id="personnel_date_issued">
-                                <label for="personnel_date_issued">Date Issued (Optional)</label>
-                            </div>
+                                    <div class="list-group list-group-flush border rounded-3"
+                                        style="max-height: 250px; overflow-y: auto;" id="personnelList">
+                                        @foreach ($personnels as $personnel)
+                                            <button type="button"
+                                                class="list-group-item list-group-item-action personnel-item"
+                                                data-id="{{ $personnel->personnel_id }}"
+                                                data-name="{{ $personnel->personnel_name }}"
+                                                data-branch="{{ $personnel->branch->branch_name ?? 'N/A' }}"
+                                                data-dept="{{ $personnel->branch->branch_department ?? 'N/A' }}">
+                                                <div class="d-flex w-100 justify-content-between align-items-center">
+                                                    <h6 class="mb-1 text-truncate" style="max-width: 150px;">
+                                                        {{ $personnel->personnel_name }}</h6>
 
-                            <!-- Remarks -->
-                            <div class="form-floating mb-3">
-                                <select name="personnel_item_remarks" class="form-select" id="personnel_item_remarks"
-                                    required>
-                                    <option value="" disabled selected>Select Remark</option>
-                                    <option value="Received">Received</option>
-                                    <option value="Not Receive">Not Receive</option>
-                                    <option value="To be delivered">To be delivered</option>
-                                </select>
-                                <label for="personnel_item_remarks">Remarks</label>
-                                <div class="invalid-feedback">Remark is required.</div>
-                            </div>
+                                                </div>
+                                                <p class="mb-0 small text-muted">
+                                                    <i
+                                                        class="bi bi-building me-1"></i>{{ $personnel->branch->branch_name ?? 'N/A' }}
+                                                    |
+                                                    <i
+                                                        class="bi bi-diagram-3 me-1"></i>{{ $personnel->branch->branch_department ?? 'N/A' }}
+                                                </p>
+                                            </button>
+                                        @endforeach
+                                    </div>
 
-                            <!-- Receive Date (hidden by default) -->
-                            <div class="form-floating mb-3" id="receive_date_container" style="display:none;">
-                                <input type="date" name="personnel_date_receive" class="form-control"
-                                    id="personnel_date_receive">
-                                <label for="personnel_date_receive">Receive Date </label>
+                                    <div class="invalid-feedback mt-2" id="personnelError">
+                                        <i class="bi bi-exclamation-circle"></i> Please select a personnel.
+                                    </div>
+
+                                    <div class="mt-3 p-3 bg-light rounded-3 border d-none" id="selectedPersonnelCard">
+                                        <p class="small text-muted mb-1 text-uppercase fw-bold"
+                                            style="font-size: 0.7rem;">Assigned To:</p>
+                                        <h6 class="mb-0 text-primary" id="display_personnel_name"></h6>
+                                        <div class="small text-muted mt-1" style="font-size: 0.8rem;">
+                                            <span id="display_branch"></span> &bull; <span id="display_dept"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 border-end pe-md-3">
+                                    <h6 class="text-muted mb-3"><i class="bi bi-box-seam me-1"></i> 2. Select Item
+                                    </h6>
+
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                                        <input type="text" id="itemSearch" class="form-control"
+                                            placeholder="Search item, brand, or SN...">
+                                    </div>
+
+                                    <div class="list-group list-group-flush border rounded-3"
+                                        style="max-height: 250px; overflow-y: auto;" id="itemList">
+                                        @foreach ($items as $item)
+                                            @php
+                                                $qty = $item->item_quantity_remaining ?? 0;
+                                                $isOutOfStock = $qty <= 0;
+                                            @endphp
+                                            <button type="button"
+                                                class="list-group-item list-group-item-action item-btn {{ $isOutOfStock ? 'disabled bg-light opacity-75' : '' }}"
+                                                data-id="{{ $item->item_id }}" data-name="{{ $item->item_name }}"
+                                                data-brand="{{ $item->brand->item_brand_name ?? 'N/A' }}"
+                                                data-category="{{ $item->category->item_category_name ?? 'N/A' }}"
+                                                data-serial="{{ $item->item_serialno ?? '-' }}"
+                                                data-uom="{{ $item->uom->item_uom_name ?? 'Pcs' }}"
+                                                data-qty="{{ $qty }}" {{ $isOutOfStock ? 'disabled' : '' }}>
+
+                                                <div
+                                                    class="d-flex w-100 justify-content-between align-items-center mb-1">
+                                                    <h6 class="mb-0 text-truncate"
+                                                        style="max-width: 140px; font-size: 0.95rem;">
+                                                        {{ $item->item_name }}</h6>
+                                                    <span
+                                                        class="badge {{ $isOutOfStock ? 'bg-danger' : 'bg-success' }}">
+                                                        {{ $qty }} Left
+                                                    </span>
+                                                </div>
+
+                                                <div class="d-flex flex-wrap gap-2 mb-1" style="font-size: 0.75rem;">
+                                                    <span class="text-muted"><i
+                                                            class="bi bi-tag-fill me-1"></i>{{ $item->brand->item_brand_name ?? '-' }}</span>
+                                                    <span class="text-muted"><i
+                                                            class="bi bi-upc-scan me-1"></i>{{ $item->item_serialno ?? 'N/A' }}</span>
+                                                </div>
+                                                <div class="text-muted" style="font-size: 0.7rem;">
+                                                    Cat: {{ $item->category->item_category_name ?? 'N/A' }} &bull; UOM:
+                                                    {{ $item->uom->item_uom_name ?? '-' }}
+                                                </div>
+                                            </button>
+                                        @endforeach
+                                    </div>
+
+                                    <div class="invalid-feedback mt-2" id="itemError">
+                                        <i class="bi bi-exclamation-circle"></i> Please select an item.
+                                    </div>
+
+                                    <div class="mt-3 p-3 bg-light rounded-3 border d-none" id="selectedItemCard">
+                                        <p class="small text-muted mb-1 text-uppercase fw-bold"
+                                            style="font-size: 0.7rem;">Item to Issue:</p>
+                                        <h6 class="mb-0 text-success" id="display_item_name"></h6>
+                                        <div class="small text-muted mt-1" style="font-size: 0.8rem;">
+                                            Brand: <span id="display_item_brand"></span> &bull; SN: <span
+                                                id="display_item_sn"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <h6 class="text-muted mb-3"><i class="bi bi-card-text me-1"></i> 3. Issuance
+                                        Details</h6>
+
+                                    <div class="form-floating mb-3">
+                                        <input type="number" name="personnel_item_quantity" class="form-control"
+                                            id="personnel_item_quantity" placeholder="Quantity" min="1"
+                                            disabled required>
+                                        <label for="personnel_item_quantity">Quantity to Issue</label>
+                                        <div class="invalid-feedback" id="qtyErrorText">
+                                            Please select an item first.
+                                        </div>
+                                        <div class="form-text text-success d-none mt-1" id="qtyAvailableText"></div>
+                                    </div>
+
+                                    <div class="form-floating mb-3">
+                                        <input type="date" name="personnel_date_issued" class="form-control"
+                                            id="personnel_date_issued" required>
+                                        <label for="personnel_date_issued">Date Issued</label>
+                                    </div>
+
+                                    <div class="form-floating mb-3">
+                                        <select name="personnel_item_remarks" class="form-select"
+                                            id="personnel_item_remarks" required>
+                                            <option value="" disabled selected>Select Remark</option>
+                                            <option value="Received">Received</option>
+                                            <option value="Not Receive">Not Receive</option>
+                                            <option value="To be delivered">To be delivered</option>
+                                        </select>
+                                        <label for="personnel_item_remarks">Remarks</label>
+                                        <div class="invalid-feedback">Remark is required.</div>
+                                    </div>
+
+                                    <div class="form-floating mb-3" id="receive_date_container"
+                                        style="display:none;">
+                                        <input type="date" name="personnel_date_receive" class="form-control"
+                                            id="personnel_date_receive">
+                                        <label for="personnel_date_receive">Receive Date</label>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
 
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-light text-dark"
+                        <div class="modal-footer bg-light">
+                            <button type="button" class="btn btn-outline-secondary"
                                 data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-success">Record Outbound</button>
+                            <button type="submit" class="btn btn-success px-4" id="submitBtn">Record
+                                Outbound</button>
                         </div>
                     </form>
 
@@ -285,7 +390,227 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
+            // Form and Error elements
+            const form = document.getElementById('outboundForm');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Personnel Elements
+            const pSearchInput = document.getElementById('personnelSearch');
+            const personnelItems = document.querySelectorAll('.personnel-item');
+            const pHiddenInput = document.getElementById('selected_personnel_id');
+            const pDisplayCard = document.getElementById('selectedPersonnelCard');
+            const pErrorDiv = document.getElementById('personnelError');
+
+            // Item Elements
+            const iSearchInput = document.getElementById('itemSearch');
+            const itemBtns = document.querySelectorAll('.item-btn');
+            const iHiddenInput = document.getElementById('selected_item_id');
+            const iDisplayCard = document.getElementById('selectedItemCard');
+            const iErrorDiv = document.getElementById('itemError');
+
+            // Quantity Elements
+            const qtyInput = document.getElementById('personnel_item_quantity');
+            const qtyErrorText = document.getElementById('qtyErrorText');
+            const qtyAvailableText = document.getElementById('qtyAvailableText');
+            let maxAvailableQty = 0;
+
+            /* =========================================
+               1. Generic Search Function
+               ========================================= */
+            function attachSearch(searchInput, listItems) {
+                if (!searchInput) return;
+                searchInput.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+                    listItems.forEach(item => {
+                        const textData = item.innerText.toLowerCase();
+                        if (textData.includes(searchTerm)) {
+                            item.classList.remove('d-none');
+                        } else {
+                            item.classList.add('d-none');
+                        }
+                    });
+                });
+            }
+
+            attachSearch(pSearchInput, personnelItems);
+            attachSearch(iSearchInput, itemBtns);
+
+            /* =========================================
+               2. Personnel Selection Logic
+               ========================================= */
+            personnelItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    personnelItems.forEach(btn => btn.classList.remove('active', 'bg-primary',
+                        'text-white'));
+                    this.classList.add('active', 'bg-primary', 'text-white');
+
+                    personnelItems.forEach(btn => {
+                        const textElements = btn.querySelectorAll(
+                            '.text-muted, .text-light');
+                        if (btn.classList.contains('active')) {
+                            textElements.forEach(el => {
+                                el.classList.remove('text-muted');
+                                el.classList.add('text-light');
+                            });
+                        } else {
+                            textElements.forEach(el => {
+                                el.classList.remove('text-light');
+                                el.classList.add('text-muted');
+                            });
+                        }
+                    });
+
+                    pHiddenInput.value = this.getAttribute('data-id');
+                    pErrorDiv.classList.remove('d-block');
+
+                    document.getElementById('display_personnel_name').innerText = this.getAttribute(
+                        'data-name');
+                    document.getElementById('display_branch').innerText = this.getAttribute(
+                        'data-branch');
+                    document.getElementById('display_dept').innerText = this.getAttribute(
+                        'data-dept');
+                    pDisplayCard.classList.remove('d-none');
+                });
+            });
+
+            /* =========================================
+               3. Item Selection & Stock Logic
+               ========================================= */
+            itemBtns.forEach(item => {
+                item.addEventListener('click', function() {
+                    if (this.hasAttribute('disabled')) return; // Extra safety check
+
+                    itemBtns.forEach(btn => btn.classList.remove('active', 'bg-success',
+                        'text-white'));
+                    this.classList.add('active', 'bg-success', 'text-white');
+
+                    itemBtns.forEach(btn => {
+                        const textElements = btn.querySelectorAll(
+                            '.text-muted, .text-light');
+                        if (btn.classList.contains('active')) {
+                            textElements.forEach(el => {
+                                el.classList.remove('text-muted');
+                                el.classList.add('text-light');
+                            });
+                        } else {
+                            textElements.forEach(el => {
+                                el.classList.remove('text-light');
+                                el.classList.add('text-muted');
+                            });
+                        }
+                    });
+
+                    iHiddenInput.value = this.getAttribute('data-id');
+                    iErrorDiv.classList.remove('d-block');
+
+                    // Update Selected Item Card
+                    document.getElementById('display_item_name').innerText = this.getAttribute(
+                        'data-name');
+                    document.getElementById('display_item_brand').innerText = this.getAttribute(
+                        'data-brand');
+                    document.getElementById('display_item_sn').innerText = this.getAttribute(
+                        'data-serial');
+                    iDisplayCard.classList.remove('d-none');
+
+                    // --- Update Quantity Validation Rules ---
+                    maxAvailableQty = parseInt(this.getAttribute('data-qty'));
+
+                    qtyInput.disabled = false;
+                    qtyInput.max = maxAvailableQty;
+                    qtyInput.value = 1; // Auto-fill 1 for convenience
+                    qtyInput.classList.remove('is-invalid');
+
+                    qtyAvailableText.classList.remove('d-none');
+                    qtyAvailableText.innerText =
+                        `Max available: ${maxAvailableQty} ${this.getAttribute('data-uom')}`;
+                    submitBtn.disabled = false;
+                });
+            });
+
+            /* =========================================
+               4. Quantity Input Live Validation
+               ========================================= */
+            if (qtyInput) {
+                qtyInput.addEventListener('input', function() {
+                    const currentVal = parseInt(this.value);
+
+                    if (!iHiddenInput.value) {
+                        this.classList.add('is-invalid');
+                        qtyErrorText.innerText = `Please select an item first.`;
+                        submitBtn.disabled = true;
+                    } else if (currentVal > maxAvailableQty) {
+                        this.classList.add('is-invalid');
+                        qtyErrorText.innerText = `Cannot exceed stock limit (${maxAvailableQty}).`;
+                        submitBtn.disabled = true;
+                    } else if (currentVal < 1 || isNaN(currentVal)) {
+                        this.classList.add('is-invalid');
+                        qtyErrorText.innerText = `Quantity must be at least 1.`;
+                        submitBtn.disabled = true;
+                    } else {
+                        this.classList.remove('is-invalid');
+                        submitBtn.disabled = false;
+                    }
+                });
+            }
+
+            /* =========================================
+               5. Form Final Submit Validation
+               ========================================= */
+            if (form) {
+                form.addEventListener('submit', function(event) {
+                    let isValid = true;
+
+                    // Check Personnel
+                    if (!pHiddenInput.value) {
+                        pErrorDiv.classList.add('d-block');
+                        isValid = false;
+                    }
+
+                    // Check Item
+                    if (!iHiddenInput.value) {
+                        iErrorDiv.classList.add('d-block');
+                        isValid = false;
+                    }
+
+                    // Check Quantity
+                    const finalQty = parseInt(qtyInput.value);
+                    if (!iHiddenInput.value || finalQty > maxAvailableQty || finalQty < 1 || isNaN(
+                            finalQty)) {
+                        qtyInput.classList.add('is-invalid');
+                        isValid = false;
+                    }
+
+                    if (!isValid) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                });
+            }
+
+            /* =========================================
+               6. Remarks Logic for "Received" Date
+               ========================================= */
+            const remarkSelect = document.getElementById('personnel_item_remarks');
+            const receiveDateContainer = document.getElementById('receive_date_container');
+            const receiveDateInput = document.getElementById('personnel_date_receive');
+
+            if (remarkSelect && receiveDateContainer && receiveDateInput) {
+                remarkSelect.addEventListener('change', function() {
+                    if (this.value === 'Received') {
+                        receiveDateContainer.style.display = 'block';
+                        receiveDateInput.setAttribute('required', 'required');
+                    } else {
+                        receiveDateContainer.style.display = 'none';
+                        receiveDateInput.removeAttribute('required');
+                        receiveDateInput.value = '';
+                    }
+                });
+            }
+        });
+    </script>
     {{-- search filtering --}}
     <script>
         document.addEventListener("DOMContentLoaded", function() {

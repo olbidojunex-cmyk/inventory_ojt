@@ -1,7 +1,8 @@
 @forelse ($outbounds as $outbound)
     @php
         $remarkColor = [
-            'To be delivered' => 'bg-info text-dark                                                                                                                      ',
+            'To be delivered' =>
+                'bg-info text-dark                                                                                                                      ',
             'Not Receive' => 'bg-danger',
             'Issued' => 'bg-warning text-dark ',
             'Received' => 'bg-success',
@@ -12,14 +13,16 @@
         <td>
             <input type="checkbox" class="select_item" value="{{ $outbound->personnel_item_id }}">
         </td>
-        <td>{{ $outbound->personnel?->personnel_name ?? '-' }}</td>
-        <td>{{ $outbound->item?->item_name ?? '-' }}</td>
-        <td>{{ $outbound->personnel_date_issued }}</td>
-        <td>{{ $outbound->personnel_item_quantity }}</td>
-        <td>{{ $outbound->item?->uom?->item_uom_name ?? '-' }}</td>
-        <td>{{ $outbound->personnel_date_receive }}</td>
-        <td>{{ $outbound->personnel?->branch?->branch_name ?? '-' }}</td>
-        <td>{{ $outbound->personnel?->branch?->branch_department ?? '-' }}</td>
+        <td class="text-center">{{ $outbound->personnel?->personnel_name ?? '-' }}</td>
+        <td class="text-center">{{ $outbound->item?->item_name ?? '-' }}</td>
+        <td class="text-center">{{ $outbound->personnel_date_issued }}</td>
+        <td class="text-center">{{ $outbound->personnel_item_quantity }}</td>
+        <td class="text-center">{{ $outbound->item?->uom?->item_uom_name ?? '-' }}</td>
+        <td class="text-center">
+            {{ \Carbon\Carbon::parse($outbound->personnel_date_receive)->setTimezone('Asia/Manila')->format('M d, Y ') }}
+        </td>
+        <td class="text-center">{{ $outbound->personnel?->branch?->branch_name ?? '-' }}</td>
+        <td class="text-center">{{ $outbound->personnel?->branch?->branch_department ?? '-' }}</td>
         <td>
             <span class="badge {{ $remarkColor[$outbound->personnel_item_remarks] ?? 'bg-secondary' }}">
                 {{ $outbound->personnel_item_remarks ?? '-' }}
@@ -107,20 +110,32 @@
     <div class="modal fade" id="editOutboundModal_{{ $outbound->personnel_item_id }}" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
+
+                @php
+                    $isReturned = $outbound->personnel_item_remarks === 'Returned';
+                @endphp
+
                 <form action="{{ route('outbound.update', $outbound->personnel_item_id) }}" method="POST">
                     @csrf
                     @method('PUT')
 
                     <div class="modal-header">
-                        <h5 class="modal-title">Edit Outbound</h5>
+                        <h5 class="modal-title">
+                            Edit Outbound
+                            @if ($isReturned)
+                                {{-- <span class="badge bg-danger ms-2">Returned (Locked)</span> --}}
+                            @endif
+                        </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
 
                     <div class="modal-body">
+
                         {{-- Custodian --}}
                         <div class="mb-3">
                             <label class="form-label">Custodian</label>
-                            <select name="personnel_id" class="form-select" required>
+                            <select name="personnel_id" class="form-select" {{ $isReturned ? 'disabled' : '' }}
+                                required>
                                 @foreach ($personnels as $personnel)
                                     <option value="{{ $personnel->personnel_id }}"
                                         {{ $personnel->personnel_id == $outbound->personnel_id ? 'selected' : '' }}>
@@ -134,20 +149,23 @@
                         <div class="mb-3">
                             <label class="form-label">Quantity</label>
                             <input type="number" name="personnel_item_quantity" class="form-control"
-                                value="{{ $outbound->personnel_item_quantity }}" required>
+                                value="{{ $outbound->personnel_item_quantity }}" {{ $isReturned ? 'disabled' : '' }}
+                                required>
                         </div>
 
                         {{-- Date Received --}}
                         <div class="mb-3">
                             <label class="form-label">Date Received</label>
                             <input type="date" name="personnel_item_receive" class="form-control"
-                                value="{{ $outbound->personnel_date_receive }}" required>
+                                value="{{ $outbound->personnel_date_receive }}" {{ $isReturned ? 'disabled' : '' }}
+                                required>
                         </div>
 
                         {{-- Remarks --}}
                         <div class="mb-3">
                             <label class="form-label">Remarks</label>
-                            <select name="personnel_item_remarks" class="form-select" required>
+                            <select name="personnel_item_remarks" class="form-select"
+                                {{ $isReturned ? 'disabled' : '' }} required>
                                 <option value="Issued"
                                     {{ $outbound->personnel_item_remarks == 'Issued' ? 'selected' : '' }}>
                                     Issued
@@ -156,16 +174,30 @@
                                     {{ $outbound->personnel_item_remarks == 'Returned' ? 'selected' : '' }}>
                                     Returned
                                 </option>
+                                <option value="Received"
+                                    {{ $outbound->personnel_item_remarks == 'Received' ? 'selected' : '' }}>
+                                    Received
+                                </option>
+                                <option value="Not Receive"
+                                    {{ $outbound->personnel_item_remarks == 'Not Receive' ? 'selected' : '' }}>
+                                    Not Received
+                                </option>
                             </select>
                         </div>
+
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-light text-dark"
-                            data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Update Outbound</button>
+                        <button type="button" class="btn btn-outline-light text-dark" data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+
+                        <button type="submit" class="btn btn-primary" {{ $isReturned ? 'disabled' : '' }}>
+                            {{ $isReturned ? 'Cannot Edit (Returned)' : 'Update Outbound' }}
+                        </button>
                     </div>
                 </form>
+
             </div>
         </div>
     </div>
@@ -174,44 +206,68 @@
     <div class="modal fade" id="returnOutboundModal_{{ $outbound->personnel_item_id }}" tabindex="-1">
         <div class="modal-dialog modal-md">
             <div class="modal-content">
+
+                @php
+                    $isReturned = $outbound->personnel_item_remarks === 'Returned';
+                @endphp
+
                 <form action="{{ route('outbound.return', $outbound->personnel_item_id) }}" method="POST">
                     @csrf
                     @method('PUT')
 
                     <div class="modal-header">
-                        <h5 class="modal-title">Return Item</h5>
+                        <h5 class="modal-title">
+                            Return Item
+                            @if ($isReturned)
+                                {{-- <span class="badge bg-danger ms-2">Already Returned</span> --}}
+                            @endif
+                        </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
 
                     <div class="modal-body">
+
                         {{-- Returned Quantity --}}
                         <div class="mb-3">
                             <label for="return_quantity_{{ $outbound->personnel_item_id }}"
-                                class="form-label">Returned
-                                Quantity</label>
+                                class="form-label">Returned Quantity</label>
+
                             <input type="number" name="return_quantity"
                                 id="return_quantity_{{ $outbound->personnel_item_id }}" class="form-control"
-                                min="1" max="{{ $outbound->personnel_item_quantity }}" required>
+                                min="1" max="{{ $outbound->personnel_item_quantity }}"
+                                {{ $isReturned ? 'disabled' : '' }} required>
                         </div>
 
                         {{-- Condition --}}
                         <div class="mb-3">
                             <label for="return_condition_{{ $outbound->personnel_item_id }}"
                                 class="form-label">Condition</label>
+
                             <select name="return_condition" id="return_condition_{{ $outbound->personnel_item_id }}"
-                                class="form-select" required>
+                                class="form-select" {{ $isReturned ? 'disabled' : '' }} required>
                                 <option value="Good">Good</option>
                                 <option value="Damaged">Damaged</option>
                             </select>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Date Received</label>
+                            <input type="date" name="personnel_item_receive" class="form-control"
+                                value="{{ $outbound->personnel_date_receive }}" {{ $isReturned ? 'disabled' : '' }}
+                                required>
+                        </div>
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-light text-dark"
-                            data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-warning">Return Item</button>
+                        <button type="button" class="btn btn-outline-light text-dark" data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+
+                        <button type="submit" class="btn btn-warning" {{ $isReturned ? 'disabled' : '' }}>
+                            {{ $isReturned ? 'Already Returned' : 'Return Item' }}
+                        </button>
                     </div>
                 </form>
+
             </div>
         </div>
     </div>

@@ -18,7 +18,7 @@ class ItemController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+ public function index(Request $request)
     {
         $query = $request->get('search', '');
         $remarkFilter = $request->get('remark');
@@ -29,6 +29,8 @@ class ItemController extends Controller
         $item_brands = ItemBrand::all();
         $item_uoms = ItemUom::all();
 
+        $itemCount = Item::count();
+        
         // Base query for items
         $itemsQuery = Item::query();
 
@@ -54,59 +56,12 @@ class ItemController extends Controller
         // Get regular items
         $items = $itemsQuery->orderBy('created_at', 'desc')->get();
 
-        // Get returned items and integrate fully
-        $returnedItems = PersonnelItem::where('personnel_item_remarks', 'Returned')
-            ->with(['item', 'item.uom', 'item.category', 'item.brand'])
-            ->get()
-            ->map(function ($pi) {
-                return (object) [
-                    'item_id' => 'return-' . $pi->personnel_item_id,
-                    'item_name' => $pi->item->item_name ?? 'N/A',
-                    'item_category_id' => $pi->item->item_category_id ?? null,
-                    'category' => $pi->item->category ?? null,
-                    'brand' => $pi->item->brand ?? null,
-                    'item_serialno' => $pi->item->item_serialno ?? '-',
-                    'uom' => $pi->item->uom ?? null,
-                    'item_quantity' => $pi->personnel_item_quantity,
-                    'item_quantity_remaining' => $pi->personnel_item_quantity,
-                    'item_remark' => $pi->personnel_item_remarks ?? 'Returned',
-                    'created_at' => $pi->created_at,
-                    'updated_at' => $pi->updated_at,
-                ];
-            })
-            ->filter(function ($pi) use ($query, $remarkFilter, $categoryId, $brandId) {
-                // Search filter
-                if ($query) {
-                    $match = str_contains(strtolower($pi->item_name), strtolower($query)) ||
-                        str_contains(strtolower($pi->item_serialno), strtolower($query));
-                    if (!$match)
-                        return false;
-                }
-
-                // Remark filter (works for Returned and others)
-                if ($remarkFilter && $pi->item_remark != $remarkFilter)
-                    return false;
-
-                // Category filter
-                if ($categoryId && $pi->item_category_id != $categoryId)
-                    return false;
-
-                // Brand filter
-                if ($brandId && $pi->brand?->item_brand_id != $brandId)
-                    return false;
-
-                return true;
-            });
-
-        // Merge regular items + returned items
-        $allItems = $items->concat($returnedItems)->sortByDesc('created_at');
-
-        // Paginate manually
+        // Paginate manually (using the collection of regular items)
         $perPage = 10;
         $page = $request->get('page', 1);
         $itemsPaginated = new \Illuminate\Pagination\LengthAwarePaginator(
-            $allItems->forPage($page, $perPage),
-            $allItems->count(),
+            $items->forPage($page, $perPage),
+            $items->count(),
             $perPage,
             $page,
             ['path' => $request->url(), 'query' => $request->query()]
@@ -119,34 +74,24 @@ class ItemController extends Controller
             'brand' => $brandId
         ]);
 
-        // Get unique remarks for dropdown
-        $item_remarks = Item::select('item_remark')->distinct()->orderBy('item_remark')->pluck('item_remark')->toArray();
-
-        $returned_remarks = PersonnelItem::where('personnel_item_remarks', 'Returned')
-            ->pluck('personnel_item_remarks')
-            ->unique()
+        // Get unique remarks for dropdown (only from the Item table now)
+        $item_remarks = Item::select('item_remark')
+            ->distinct()
+            ->orderBy('item_remark')
+            ->pluck('item_remark')
             ->toArray();
-
-        $item_remarks = array_unique(array_merge($item_remarks, $returned_remarks));
 
         // EXPORT SINGLE ITEM PDF
         if ($request->get('export') == 'pdf' && $request->has('item_id')) {
             $itemId = $request->get('item_id');
-            if (str_starts_with($itemId, 'return-')) {
-                $personnelItemId = str_replace('return-', '', $itemId);
-                $pi = PersonnelItem::findOrFail($personnelItemId);
-                $pdf = Pdf::loadView('inventory.pdf-individual-returned', compact('pi'));
-                return $pdf->stream("returned_item_{$pi->personnel_item_id}.pdf");
-            } else {
-                $item = Item::findOrFail($itemId);
-                $pdf = Pdf::loadView('inventory.pdf-individual', compact('item'));
-                return $pdf->stream("item_{$item->item_id}.pdf");
-            }
+            $item = Item::findOrFail($itemId);
+            $pdf = Pdf::loadView('inventory.pdf-individual', compact('item'));
+            return $pdf->stream("item_{$item->item_id}.pdf");
         }
 
         // EXPORT ALL ITEMS PDF
-            if ($request->get('export') == 'pdf' && !$request->has('item_id')) {
-            $pdf = Pdf::loadView('inventory.pdf-forall', ['allItems' => $allItems]);
+        if ($request->get('export') == 'pdf' && !$request->has('item_id')) {
+            $pdf = Pdf::loadView('inventory.pdf-forall', ['allItems' => $items]);
             return $pdf->stream('inventory.pdf');
         }
 
@@ -195,7 +140,8 @@ class ItemController extends Controller
             'item_categories' => $item_categories,
             'item_brands' => $item_brands,
             'item_uoms' => $item_uoms,
-            'item_remarks' => $item_remarks
+            'item_remarks' => $item_remarks,
+            'itemCount' => $itemCount
         ]);
     }
 

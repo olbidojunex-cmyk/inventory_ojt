@@ -4,20 +4,20 @@
               'Good' => 'bg-success',
               'Damaged' => 'bg-danger',
               'Missing' => 'bg-warning text-dark',
-              'Returned' => 'bg-primary '
+              'Returned' => 'bg-primary ',
           ];
       @endphp
       <tr>
           <td>
               <input type="checkbox" class="select_item" value="{{ $item->item_id }}">
           </td>
-          <td>{{ $item->item_name }}</td>
-          <td>{{ $item->category ? $item->category->item_category_name : '-' }}</td>
-          <td>{{ $item->brand ? $item->brand->item_brand_name : '-' }}</td>
-          <td>{{ $item->item_serialno ?? '-' }}</td>
-          <td>{{ $item->uom ? $item->uom->item_uom_name : '-' }}</td>
-          <td>{{ $item->item_quantity ?? '-' }}</td>
-          <td>{{ $item->item_quantity_remaining ?? '-' }}</td>
+          <td class="text-center">{{ $item->item_name }}</td>
+          <td class="text-center">{{ $item->category ? $item->category->item_category_name : '-' }}</td>
+          <td class="text-center">{{ $item->brand ? $item->brand->item_brand_name : '-' }}</td>
+          <td class="text-center">{{ $item->item_serialno ?? '-' }}</td>
+          <td class="text-center">{{ $item->uom ? $item->uom->item_uom_name : '-' }}</td>
+          <td class="text-center">{{ $item->item_quantity ?? '-' }}</td>
+          <td class="text-center">{{ $item->item_quantity_remaining ?? '-' }}</td>
           {{-- <td>
               @if ($item->item_quantity_status == 'Out of Stock')
                   <span class="badge bg-danger">Out of Stock</span>
@@ -34,8 +34,8 @@
           </td>
           <td>
               <div class="dropdown position-static">
-                  <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="actionMenu_{{ $item->item_id }}"
-                      data-bs-toggle="dropdown" aria-expanded="false">
+                  <button class="btn btn-light btn-sm dropdown-toggle" type="button"
+                      id="actionMenu_{{ $item->item_id }}" data-bs-toggle="dropdown" aria-expanded="false">
 
                       <i class="bi bi-three-dots-vertical fs-5"></i>
 
@@ -75,21 +75,29 @@
                               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                           </div>
                           <div class="modal-body">
-                              <ul class="list-group list-group-flush">
-                                  <li class="list-group-item"><strong>Item Name:</strong> {{ $item->item_name }}</li>
-                                  <li class="list-group-item"><strong>Category:</strong>
-                                      {{ $item->category ? $item->category->item_category_name : '-' }}</li>
-                                  <li class="list-group-item"><strong>Brand:</strong>
-                                      {{ $item->brand ? $item->brand->item_brand_name : '-' }}</li>
-                                  <li class="list-group-item"><strong>Serial Number:</strong>
-                                      {{ $item->item_serialno ?? 'N/A' }}</li>
-                                  <li class="list-group-item"><strong>Quantity:</strong>
-                                      {{ $item->item_quantity ?? 'N/A' }}</li>
-                                  <li class="list-group-item"><strong>Remark:</strong>
-                                      {{ ucfirst($item->item_remark) ?? 'N/A' }}</li>
-                                  <li class="list-group-item"><strong>Unit of Measure:</strong>
-                                      {{ $item->uom ? $item->uom->item_uom_name : '-' }}</li>
-                              </ul>
+                              <div class="row">
+                                  <div class="col-md-6 border-end">
+                                      <h6 class="text-muted mb-3"><i class="bi bi-info-circle me-1"></i> Item
+                                          Identification</h6>
+                                      <p><strong>Name:</strong> {{ $item->item_name }}</p>
+                                      <p><strong>Category:</strong>
+                                          {{ $item->category ? $item->category->item_category_name : '-' }}</p>
+                                      <p><strong>Brand:</strong>
+                                          {{ $item->brand ? $item->brand->item_brand_name : '-' }}</p>
+                                      <p><strong>Serial Number:</strong> {{ $item->item_serialno ?? '-' }}</p>
+                                  </div>
+
+                                  <div class="col-md-6">
+                                      <h6 class="text-muted mb-3"><i class="bi bi-box-seam me-1"></i> Stock
+                                          Information</h6>
+                                      <p><strong>Unit of Measure:</strong>
+                                          {{ $item->uom ? $item->uom->item_uom_name : '-' }}</p>
+                                      <p><strong>Quantity:</strong> {{ $item->item_quantity ?? '-' }}</p>
+                                      <p><strong>Remaining Quantity:</strong>
+                                          {{ $item->item_quantity_remaining ?? '-' }}</p>
+                                      <p><strong>Remark:</strong> {{ $item->item_remark ?? '-' }}</p>
+                                  </div>
+                              </div>
                           </div>
                           <div class="modal-footer">
                               <!-- PDF button -->

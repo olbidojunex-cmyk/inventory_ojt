@@ -9,8 +9,7 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $itemCount = Item::where('item_remark', '!=', 'Damaged')
-            ->sum('item_quantity');
+        $itemCount = Item::sum('item_quantity');
 
         // Total outbound quantity (Received)
         $outboundCount = PersonnelItem::where('personnel_item_remarks', 'Received')
@@ -41,7 +40,8 @@ class DashboardController extends Controller
             'damagedItem',
             'availableItem',
             'recentActivities',
-            'itemRemaining'
+            'itemRemaining',
+            'goodItemTotal'
         ));
     }
 

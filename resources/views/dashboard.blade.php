@@ -31,7 +31,7 @@
                             </div>
                             <div class="summary-meta">
                                 
-                                <div class="summary-value">{{ $itemRemaining }}</div>
+                                <div class="summary-value">{{ $goodItemTotal }}</div>
                                 <div class="summary-title">Available Items</div>
                             </div>
                         </div>

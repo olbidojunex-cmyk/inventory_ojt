@@ -328,7 +328,7 @@ class PersonnelItemController extends Controller
 
             } else {
 
-                // ✅ Reduce ONLY remaining (since item is gone/damaged)
+                // ✅ Reduce ONLY remaining from original item
                 $item->item_quantity_remaining -= $validated['return_quantity'];
                 $item->save();
 
@@ -339,9 +339,13 @@ class PersonnelItemController extends Controller
 
                 if ($existingDamaged) {
 
-                    // ✅ Add to damaged stock
-                    $existingDamaged->item_quantity += $validated['return_quantity'];
+                    // ✅ Set total to 0 (as per your requirement)
+                    $existingDamaged->item_quantity = 0;
+
+                    // ✅ Add to remaining
                     $existingDamaged->item_quantity_remaining += $validated['return_quantity'];
+
+                    $existingDamaged->item_quantity_status = 'Damaged';
                     $existingDamaged->save();
 
                     $damagedItemId = $existingDamaged->item_id;
@@ -349,8 +353,11 @@ class PersonnelItemController extends Controller
                 } else {
 
                     $damagedItem = $item->replicate();
-                    $damagedItem->item_quantity = $validated['return_quantity'];
+
+                    // ✅ Opposite logic
+                    $damagedItem->item_quantity = 0;
                     $damagedItem->item_quantity_remaining = $validated['return_quantity'];
+
                     $damagedItem->item_quantity_status = 'Damaged';
                     $damagedItem->item_remark = 'Damaged';
                     $damagedItem->save();

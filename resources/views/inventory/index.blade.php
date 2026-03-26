@@ -312,7 +312,7 @@
             </div>
             <label for="available" style="font-weight: bold; font-size: 18px;">
                 Individual Item Count:
-                <span style="font-weight:  font-size: 16px;">
+                <span  style="font-weight:  font-size: 16px;">
                     {{ $itemCount }}
                 </span>
             </label>

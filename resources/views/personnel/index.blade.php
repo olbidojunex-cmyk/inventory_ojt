@@ -18,7 +18,8 @@
                     <div class="d-flex gap-2">
                         <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal"
                             data-bs-target="#personnel_modal">
-                            <i class="bi bi-person-plus"></i> Add Personnel
+                            <i class="bi bi-person-plus"></i> Personnel Management
+
                         </button>
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                             data-bs-target="#outbound_modal">
@@ -77,10 +78,10 @@
                         <select name="branch" class="form-select form-select-sm" style="min-width: 150px;">
                             <option value="" disabled>Select Branch</option>
                             <option value="">All Branches</option>
+
                             @foreach ($branches as $b)
-                                <option value="{{ $b->branch_id }}"
-                                    {{ request('branch') == $b->branch_id ? 'selected' : '' }}>
-                                    {{ $b->branch_name }}
+                                <option value="{{ $b }}" {{ request('branch') == $b ? 'selected' : '' }}>
+                                    {{ $b }}
                                 </option>
                             @endforeach
                         </select>
@@ -102,67 +103,154 @@
 
         {{-- Personnel Form Modal --}}
         <div class="modal fade" id="personnel_modal" tabindex="-1">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-xl"> <!-- 👈 make it wider -->
                 <div class="modal-content">
 
                     <div class="modal-header">
-                        <h4 class="modal-title">Add Personnel</h4>
+                        <h4 class="modal-title">Personnel Management</h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
 
-                    <form action="{{ route('personnels.store') }}" method="POST" class="needs-validation" novalidate>
-                        @csrf
-                        <div class="modal-body">
+                    <div class="modal-body">
 
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="personnel_name" name="personnel_name"
-                                    placeholder="Enter Name" required>
-                                <label for="personnel_name">Personnel Name</label>
-                                <div class="invalid-feedback">
-                                    Please enter the personnel's name.
+                        <div class="row g-4">
+
+                            <!-- LEFT SIDE: FORM -->
+                            <div class="col-md-4 border-end">
+
+                                <h6 class="text-muted mb-3">
+                                    <i class="bi bi-person-plus me-1"></i> Add Personnel
+                                </h6>
+
+                                <form action="{{ route('personnels.store') }}" method="POST" class="needs-validation"
+                                    novalidate>
+                                    @csrf
+
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="personnel_name"
+                                            placeholder="Enter Name" required>
+                                        <label>Personnel Name</label>
+                                    </div>
+
+                                    <div class="form-floating mb-3">
+                                        <select name="branch_name" class="form-select" id="branch_name" required>
+                                            <option value="" disabled selected>Select Branch</option>
+                                            <option value="Gold Town">Gold Town</option>
+                                            <option value="Edison Branch">Edison Branch</option>
+                                            <option value="Osmeña Branch">Osmeña Branch</option>
+                                            <option value="Grainsco Branch">Grainsco Branch</option>
+                                        </select>
+                                        <label>Branch Name</label>
+                                    </div>
+
+                                    <div class="form-floating mb-3">
+                                        <select name="branch_department" class="form-select" id="branch_department"
+                                            required>
+                                            <option value="" disabled selected>Select Department</option>
+                                            <option value="IT DEPARTMENT">IT DEPARTMENT</option>
+                                            <option value="HR DEPARTMENT">HR DEPARTMENT</option>
+                                            <option value="ADMIN DEPARTMENT">ADMIN DEPARTMENT</option>
+                                            <option value="PURCHASING DEPARTMENT">PURCHASING DEPARTMENT</option>
+                                            <option value="WAREHOUSE DEPARTMENT">WAREHOUSE DEPARTMENT</option>
+                                            <option value="SERVICE CENTER ">SERVICE CENTER </option>
+                                            <option value="SERVICE SHOP ">SERVICE SHOP</option>
+                                            <option value="SPARE PARTS ">SPARE PARTS</option>
+                                            <option value="CORPORATE OFFICE">CORPORATE OFFICE</option>
+                                            <option value="ACCOUNTING DEPARTMENT">ACCOUNTING DEPARTMENT</option>
+                                            <option value="GUARD DEPARTMENT">GUARD DEPARTMENT</option>
+                                            <option value="AMBOT SA EMO DEPARTMENT">AMBOT SA EMO DEPARTMENT</option>
+                                        </select>
+                                        <label>Department</label>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-success w-100">
+                                        Add Personnel
+                                    </button>
+                                </form>
+
+                            </div>
+
+                            <!-- MIDDLE: PERSONNEL LIST -->
+                            <div class="col-md-4 border-end">
+
+                                <h6 class="text-muted mb-3">
+                                    <i class="bi bi-people me-1"></i> Personnel List
+                                </h6>
+
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text bg-light">
+                                        <i class="bi bi-search"></i>
+                                    </span>
+                                    <input type="text" id="personnelSearchView" class="form-control"
+                                        placeholder="Search personnel...">
                                 </div>
+
+                                <div class="list-group list-group-flush border rounded-3"
+                                    style="max-height: 350px; overflow-y: auto;" id="personnelListView">
+
+                                    @foreach ($personnels as $personnel)
+                                        <div class="position-relative">
+
+                                            <form action="{{ route('personnels.delete', $personnel->personnel_id) }}"
+                                                method="POST" class="delete-form">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    ✕
+                                                </button>
+                                            </form>
+
+                                            <!-- MAIN BUTTON -->
+                                            <button type="button"
+                                                class="list-group-item list-group-item-action personnel-view-item pe-5"
+                                                data-id="{{ $personnel->personnel_id }}"
+                                                data-name="{{ $personnel->personnel_name }}"
+                                                data-branch="{{ $personnel->branch->branch_name ?? 'N/A' }}"
+                                                data-dept="{{ $personnel->branch->branch_department ?? 'N/A' }}">
+
+                                                <h6 class="mb-1 text-truncate">
+                                                    {{ $personnel->personnel_name }}
+                                                </h6>
+
+                                                <small class="text-muted">
+                                                    {{ $personnel->branch->branch_name ?? 'N/A' }} |
+                                                    {{ $personnel->branch->branch_department ?? 'N/A' }}
+                                                </small>
+                                            </button>
+
+                                        </div>
+                                    @endforeach
+
+                                </div>
+
+                                <!-- SELECTED PERSON -->
+                                <div class="mt-3 p-2 bg-light rounded border d-none" id="selectedPersonnelView">
+                                    <span style="font-size: xx-small, font-weight: bold;">Selected Personnel</span>
+                                    <h6 class="mb-0 text-primary" id="view_person_name"></h6>
+                                    <small>
+                                        <span id="view_branch"></span> •
+                                        <span id="view_dept"></span>
+                                    </small>
+                                </div>
+
                             </div>
 
-                            <div class="form-floating mb-3">
-                                <select name="branch_name" class="form-select" id="branch_name" required>
-                                    <option value="" disabled selected>Select Branch</option>
-                                    <option value="Gold Town">Gold Town</option>
-                                    <option value="Edison Branch">Edison Branch</option>
-                                    <option value="Osmeña Branch">Osmeña Branch</option>
-                                    <option value="Grainsco Branch">Grainsco Branch</option>
-                                </select>
-                                <label for="branch_name">Branch Name</label>
-                                <div class="invalid-feedback">Please select a branch.</div>
-                            </div>
+                            <!-- RIGHT: ASSIGNED ITEMS -->
+                            <div class="col-md-4">
 
-                            <div class="form-floating mb-3">
-                                <select name="branch_department" class="form-select" id="branch_department" required>
-                                    <option value="" disabled selected>Select Department</option>
-                                    <option value="IT DEPARTMENT">IT DEPARTMENT</option>
-                                    <option value="HR DEPARTMENT">HR DEPARTMENT</option>
-                                    <option value="ADMIN DEPARTMENT">ADMIN DEPARTMENT</option>
-                                    <option value="PURCHASING DEPARTMENT">PURCHASING DEPARTMENT</option>
-                                    <option value="WAREHOUSE DEPARTMENT">WAREHOUSE DEPARTMENT</option>
-                                    <option value="SERVICE CENTER ">SERVICE CENTER </option>
-                                    <option value="SERVICE SHOP ">SERVICE SHOP</option>
-                                    <option value="SPARE PARTS ">SPARE PARTS</option>
-                                    <option value="CORPORATE OFFICE">CORPORATE OFFICE</option>
-                                    <option value="ACCOUNTING DEPARTMENT">ACCOUNTING DEPARTMENT</option>
-                                    <option value="GUARD DEPARTMENT">GUARD DEPARTMENT</option>
-                                    <option value="AMBOT SA EMO DEPARTMENT">AMBOT SA EMO DEPARTMENT</option>
-                                </select>
-                                <label for="branch_department">Department</label>
-                                <div class="invalid-feedback">Please select a department.</div>
+                                <h6 class="text-muted mb-3">
+                                    <i class="bi bi-box-seam me-1"></i> Assigned Items
+                                </h6>
+
+                                <div id="assignedItemsContainer">
+                                    <div class="text-muted">Select personnel to view items.</div>
+                                </div>
+
                             </div>
 
                         </div>
 
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-light text-dark"
-                                data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-success">Submit</button>
-                        </div>
-                    </form>
+                    </div>
 
                 </div>
             </div>
@@ -390,6 +478,173 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+
+            // DELETE PERSONNEL (AJAX)
+            $(document).on('submit', '#personnel_modal .delete-form', function(e) {
+                e.preventDefault();
+
+                let form = this;
+                let url = $(form).attr('action');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'This personnel will be deleted.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+
+                    if (result.isConfirmed) {
+
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                _method: 'DELETE'
+                            },
+                            success: function() {
+
+                                // ✅ remove entire personnel block
+                                $(form).closest('.position-relative').fadeOut(200,
+                                    function() {
+                                        $(this).remove();
+                                    });
+
+                                // ✅ success toast
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Deleted!',
+                                    timer: 1000,
+                                    showConfirmButton: false
+                                });
+
+                                // ✅ clear selected view if deleted
+                                $('#selectedPersonnelView').addClass('d-none');
+
+                            },
+                            error: function() {
+                                Swal.fire('Error', 'Delete failed.', 'error');
+                            }
+                        });
+
+                    }
+
+                });
+
+            });
+
+        });
+    </script>
+    <script>
+        document.querySelectorAll('.delete-personnel-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation(); // 🚫 prevent parent click
+
+                const id = this.getAttribute('data-id');
+
+                Swal.fire({
+                    title: "Delete this personnel?",
+                    text: "This cannot be undone!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#dc3545",
+                    confirmButtonText: "Delete"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        fetch(`/personnels/${id}/delete`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json'
+                                }
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    this.closest('.position-relative')
+                                        .remove(); // ✅ instant UI remove
+
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Deleted!',
+                                        timer: 1200,
+                                        showConfirmButton: false
+                                    });
+                                } else {
+                                    Swal.fire('Error', data.message || 'Failed.', 'error');
+                                }
+                            });
+
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const searchInput = document.getElementById('personnelSearchView');
+            const personnelItems = document.querySelectorAll('.personnel-view-item');
+            const container = document.getElementById('assignedItemsContainer');
+
+            if (!searchInput) return;
+
+            // SEARCH
+            searchInput.addEventListener('input', function() {
+                let val = this.value.toLowerCase();
+
+                personnelItems.forEach(item => {
+                    item.classList.toggle('d-none',
+                        !item.innerText.toLowerCase().includes(val)
+                    );
+                });
+            });
+
+            // CLICK PERSON
+            personnelItems.forEach(item => {
+                item.addEventListener('click', function() {
+
+                    // highlight
+                    personnelItems.forEach(btn => btn.classList.remove('active', 'bg-primary',
+                        'text-white'));
+                    this.classList.add('active', 'bg-primary', 'text-white');
+
+                    // show selected
+                    document.getElementById('view_person_name').innerText = this.dataset.name;
+                    document.getElementById('view_branch').innerText = this.dataset.branch;
+                    document.getElementById('view_dept').innerText = this.dataset.dept;
+                    document.getElementById('selectedPersonnelView').classList.remove('d-none');
+
+                    let id = this.dataset.id;
+
+                    container.innerHTML = `<div class="text-muted">Loading...</div>`;
+
+                    fetch(`/personnel/${id}/items`, {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(res => res.text())
+                        .then(html => {
+                            container.innerHTML = html;
+                        })
+                        .catch(() => {
+                            container.innerHTML =
+                                `<div class="text-danger">Failed to load items.</div>`;
+                        });
+
+                });
+            });
+
+        });
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 

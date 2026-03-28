@@ -38,7 +38,7 @@ class PersonnelItemController extends Controller
                 $q->whereHas('personnel.branch', fn($q2) => $q2->where('branch_department', $departmentFilter));
             })
             ->when($branchFilter, function ($q) use ($branchFilter) {
-                $q->whereHas('personnel.branch', fn($q2) => $q2->where('branch_id', $branchFilter));
+                $q->whereHas('personnel.branch', fn($q2) => $q2->where('branch_name', $branchFilter));
             })
             ->when($remarksFilter, fn($q) => $q->where('personnel_item_remarks', $remarksFilter))
             ->latest()
@@ -54,8 +54,10 @@ class PersonnelItemController extends Controller
             ->pluck('branch_department');
 
         // If you have branches table
-        $branches = Branch::orderBy('branch_name')->get();
-
+        $branches = Branch::select('branch_name')
+            ->distinct()
+            ->orderBy('branch_name')
+            ->pluck('branch_name');
 
         $item_remarks = PersonnelItem::select('personnel_item_remarks')
             ->distinct()
@@ -99,7 +101,11 @@ class PersonnelItemController extends Controller
                         $q->whereHas('personnel.branch', fn($q2) => $q2->where('branch_department', $departmentFilter));
                     })
                     ->when($branchFilter, function ($q) use ($branchFilter) {
-                        $q->whereHas('personnel.branch', fn($q2) => $q2->where('branch_id', $branchFilter));
+                        $q->whereHas(
+                            'personnel.branch',
+                            fn($q2) =>
+                            $q2->where('branch_name', $branchFilter)
+                        );
                     })
                     ->when($remarksFilter, fn($q) => $q->where('personnel_item_remarks', $remarksFilter));
             }
@@ -291,6 +297,11 @@ class PersonnelItemController extends Controller
      */
     public function returnItem(Request $request, PersonnelItem $outbound)
     {
+        // ✅ BLOCK if not RECEIVED
+        if ($outbound->personnel_item_remarks !== 'Received') {
+            return redirect()->back()->with('error', 'Only RECEIVED items can be returned.');
+        }
+
         $validated = $request->validate([
             'return_quantity' => 'required|integer|min:1|max:' . $outbound->personnel_item_quantity,
             'return_condition' => 'required|string|in:Good,Damaged',
@@ -307,7 +318,6 @@ class PersonnelItemController extends Controller
 
             if ($validated['return_condition'] === 'Good') {
 
-                // ✅ Add back to remaining only
                 $item->item_quantity_remaining += $validated['return_quantity'];
 
                 $item->item_quantity_status =
@@ -316,7 +326,6 @@ class PersonnelItemController extends Controller
 
                 $item->save();
 
-                // Record return
                 PersonnelItem::create([
                     'personnel_id' => $outbound->personnel_id,
                     'item_id' => $item->item_id,
@@ -328,42 +337,29 @@ class PersonnelItemController extends Controller
 
             } else {
 
-                $item->save();
-
-                // ✅ Find existing damaged item (MERGE)
                 $existingDamaged = Item::where('item_name', $item->item_name)
                     ->where('item_remark', 'Damaged')
                     ->first();
 
                 if ($existingDamaged) {
-
-                    // ✅ ALWAYS ZERO total quantity
                     $existingDamaged->item_quantity = 0;
-
-                    // ✅ Accumulate damaged count in remaining
                     $existingDamaged->item_quantity_remaining += $validated['return_quantity'];
-
                     $existingDamaged->item_quantity_status = 'Damaged';
                     $existingDamaged->save();
 
                     $damagedItemId = $existingDamaged->item_id;
 
                 } else {
-
-                    // ✅ Create damaged item once
                     $damagedItem = $item->replicate();
-
-                    $damagedItem->item_quantity = 0; // 🔥 always zero
+                    $damagedItem->item_quantity = 0;
                     $damagedItem->item_quantity_remaining = $validated['return_quantity'];
                     $damagedItem->item_quantity_status = 'Damaged';
                     $damagedItem->item_remark = 'Damaged';
-
                     $damagedItem->save();
 
                     $damagedItemId = $damagedItem->item_id;
                 }
 
-                // Record damaged return
                 PersonnelItem::create([
                     'personnel_id' => $outbound->personnel_id,
                     'item_id' => $damagedItemId,
@@ -397,4 +393,40 @@ class PersonnelItemController extends Controller
 
         return response()->json(['success' => false, 'message' => 'No items selected.'], 400);
     }
+    public function destroyPersonnel($id)
+    {
+        $personnel = Personnel::find($id);
+
+        if (!$personnel) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Personnel not found.'
+            ]);
+        }
+
+        // ❗ prevent delete if has assigned items
+        if (PersonnelItem::where('personnel_id', $id)->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cannot delete. Personnel has assigned items.'
+            ]);
+        }
+
+        $personnel->delete();
+
+        return response()->json([
+            'success' => true
+        ]);
+    }
+
+    public function getItems($id)
+    {
+        $items = PersonnelItem::with('item')
+            ->where('personnel_id', $id)
+            ->latest()
+            ->get();
+
+        return view('personnel.assigned-items', compact('items'));
+    }
 }
+

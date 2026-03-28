@@ -9,6 +9,7 @@ class ItemCategory extends Model
      protected $primaryKey = 'item_category_id';
     protected $fillable = [
         'item_category_name',
+        'item_category_icon'
     ];
 
     public function items()

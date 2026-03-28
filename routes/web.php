@@ -23,6 +23,10 @@ Route::middleware('auth')->group(function () {
     // Inventory
     Route::resource('inventory', ItemController::class);
     Route::post('/item-category/store', [ItemController::class, 'storeCategory'])->name('item-category.store');
+    Route::delete('/item-category/{id}', [ItemController::class, 'destroyCategory'])
+        ->name('item-category.destroy');
+
+
     Route::post('/inventory/check-duplicate', [ItemController::class, 'checkDuplicate'])->name('inventory.checkDuplicate');
     Route::post('/inventory/bulk-delete', [ItemController::class, 'bulkDestroy'])
         ->name('inventory.bulkDelete');
@@ -39,8 +43,10 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/outbound/bulk-delete', [PersonnelItemController::class, 'bulkPersonnelDestroy'])
         ->name('outbound.bulkDelete');
+    Route::delete('/personnels/{id}/delete', [PersonnelItemController::class, 'destroyPersonnel'])->name('personnels.delete');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/personnel/{id}/items', [PersonnelItemController::class, 'getItems']);
 });
 
 

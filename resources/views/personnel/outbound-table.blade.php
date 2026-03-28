@@ -12,18 +12,18 @@
         <td>
             <input type="checkbox" class="select_item" value="{{ $outbound->personnel_item_id }}">
         </td>
-        <td class="text-center">{{ $outbound->personnel?->personnel_name ?? '-' }}</td>
-        <td class="text-center">{{ $outbound->item?->item_name ?? '-' }}</td>
-        <td class="text-center">
+        <td>{{ $outbound->personnel?->personnel_name ?? '-' }}</td>
+        <td>{{ $outbound->item?->item_name ?? '-' }}</td>
+        <td>
             {{ \Carbon\Carbon::parse($outbound->personnel_date_issued)->setTimezone('Asia/Manila')->format('M d, Y ') }}
         </td>
-        <td class="text-center">{{ $outbound->personnel_item_quantity }}</td>
-        <td class="text-center">{{ $outbound->item?->uom?->item_uom_name ?? '-' }}</td>
-        <td class="text-center">
+        <td>{{ $outbound->personnel_item_quantity }}</td>
+        <td>{{ $outbound->item?->uom?->item_uom_name ?? '-' }}</td>
+        <td>
             {{ \Carbon\Carbon::parse($outbound->personnel_date_receive)->setTimezone('Asia/Manila')->format('M d, Y ') }}
         </td>
-        <td class="text-center">{{ $outbound->personnel?->branch?->branch_name ?? '-' }}</td>
-        <td class="text-center">{{ $outbound->personnel?->branch?->branch_department ?? '-' }}</td>
+        <td>{{ $outbound->personnel?->branch?->branch_name ?? '-' }}</td>
+        <td>{{ $outbound->personnel?->branch?->branch_department ?? '-' }}</td>
         <td>
             <span class="badge {{ $remarkColor[$outbound->personnel_item_remarks] ?? 'bg-secondary' }}">
                 {{ $outbound->personnel_item_remarks ?? '-' }}
@@ -181,14 +181,18 @@
                             <label class="form-label">Remarks</label>
                             <select name="personnel_item_remarks" class="form-select"
                                 {{ $isReturned ? 'disabled' : '' }} required>
-                                <option value="Issued"
+                                {{-- <option value="Issued"
                                     {{ $outbound->personnel_item_remarks == 'Issued' ? 'selected' : '' }}>
                                     Issued
+                                </option> --}}
+                                <option value="To be delivered"
+                                    {{ $outbound->personnel_item_remarks == 'To be delivered' ? 'selected' : '' }}>
+                                    To be delivered
                                 </option>
-                                <option value="Returned"
+                                {{-- <option value="Returned"
                                     {{ $outbound->personnel_item_remarks == 'Returned' ? 'selected' : '' }}>
                                     Returned
-                                </option>
+                                </option> --}}
                                 <option value="Received"
                                     {{ $outbound->personnel_item_remarks == 'Received' ? 'selected' : '' }}>
                                     Received

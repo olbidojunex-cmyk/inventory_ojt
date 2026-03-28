@@ -18,7 +18,7 @@ class ItemController extends Controller
     /**
      * Display a listing of the resource.
      */
- public function index(Request $request)
+    public function index(Request $request)
     {
         $query = $request->get('search', '');
         $remarkFilter = $request->get('remark');
@@ -30,7 +30,7 @@ class ItemController extends Controller
         $item_uoms = ItemUom::all();
 
         $itemCount = Item::count();
-        
+
         // Base query for items
         $itemsQuery = Item::query();
 
@@ -159,7 +159,7 @@ class ItemController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'item_name' => 'required|string|max:255',
+            'item_name' => 'nullable|string|max:255', // ✅ allow manual input
             'item_serialno' => 'nullable|string|max:255',
             'item_quantity' => 'required|integer|max:999999',
             'item_remark' => 'nullable|string|max:255',
@@ -168,27 +168,46 @@ class ItemController extends Controller
             'item_category_id' => 'required|exists:item_categories,item_category_id'
         ]);
 
-        // First or create UOM and Brand
-        $brand = ItemBrand::firstOrCreate(['item_brand_name' => $request->item_brand_name]);
-        $uom = ItemUom::firstOrCreate(['item_uom_name' => $request->item_uom_name]);
+        // Get category
+        $category = ItemCategory::findOrFail($request->item_category_id);
+        $baseName = $category->item_category_name;
 
-        // Check for existing item with same combination including item_remark
-        $existingItem = Item::where('item_name', $request->item_name)
-            ->where('item_brand_id', $brand->item_brand_id)
-            ->where('item_uom_id', $uom->item_uom_id)
-            ->where('item_remark', $request->item_remark)
+        // Generate next number
+        $lastItem = Item::where('item_category_id', $category->item_category_id)
+            ->where('item_name', 'like', $baseName . ' %')
+            ->orderBy('item_name', 'desc')
             ->first();
 
-        if ($existingItem) {
-            return redirect()->back()->withErrors(['duplicate' => 'This item already exists with the same name, brand, UOM, and remark.']);
+        if ($lastItem) {
+            preg_match('/(\d+)$/', $lastItem->item_name, $matches);
+            $nextNumber = isset($matches[1]) ? (int) $matches[1] + 1 : 1;
+        } else {
+            $nextNumber = 1;
         }
 
-        // Determine initial quantity status
+        $formattedNumber = str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        $generatedName = $baseName . ' ' . $formattedNumber;
+
+        // ✅ USE USER INPUT IF EXISTS
+        $finalName = $request->filled('item_name')
+            ? $request->item_name
+            : $generatedName;
+
+        // Create brand & UOM
+        $brand = ItemBrand::firstOrCreate([
+            'item_brand_name' => $request->item_brand_name
+        ]);
+
+        $uom = ItemUom::firstOrCreate([
+            'item_uom_name' => $request->item_uom_name
+        ]);
+
+        // Quantity status
         $quantityStatus = $request->item_quantity > 0 ? 'Available' : 'Out of Stock';
 
-        // Create Item
+        // Save item
         Item::create([
-            'item_name' => $request->item_name,
+            'item_name' => $finalName, // ✅ FIXED HERE
             'item_serialno' => $request->item_serialno,
             'item_quantity' => $request->item_quantity,
             'item_quantity_remaining' => $request->item_quantity,
@@ -205,13 +224,20 @@ class ItemController extends Controller
     {
         $request->validate([
             'item_category_name' => 'required|string|max:255|unique:item_categories,item_category_name',
+            'item_category_icon' => 'nullable|string|max:255'
         ]);
 
-        ItemCategory::create([
-            'item_category_name' => $request->item_category_name
+        $category = ItemCategory::create([
+            'item_category_name' => $request->item_category_name,
+            'item_category_icon' => $request->item_category_icon
         ]);
 
-        return redirect()->back()->with('success', 'Category added successfully.');
+        // ✅ RETURN JSON INSTEAD OF REDIRECT
+        return response()->json([
+            'item_category_id' => $category->item_category_id,
+            'item_category_name' => $category->item_category_name,
+            'item_category_icon' => $category->item_category_icon
+        ]);
     }
 
     /**
@@ -303,6 +329,13 @@ class ItemController extends Controller
         Item::findOrFail($item_id)->delete();
 
         return redirect()->back()->with('success', 'Item deleted successfully');
+    }
+
+    public function destroyCategory($id)
+    {
+        ItemCategory::findOrFail($id)->delete();
+
+        return redirect()->back()->with('success', 'Category deleted successfully.');
     }
 
     public function bulkDestroy(Request $request)

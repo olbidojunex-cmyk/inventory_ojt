@@ -11,13 +11,20 @@
           <td>
               <input type="checkbox" class="select_item" value="{{ $item->item_id }}">
           </td>
-          <td class="text-center">{{ $item->item_name }}</td>
-          <td class="text-center">{{ $item->category ? $item->category->item_category_name : '-' }}</td>
-          <td class="text-center">{{ $item->brand ? $item->brand->item_brand_name : '-' }}</td>
-          <td class="text-center">{{ $item->item_serialno ?? '-' }}</td>
-          <td class="text-center">{{ $item->uom ? $item->uom->item_uom_name : '-' }}</td>
-          <td class="text-center">{{ $item->item_quantity ?? '-' }}</td>
-          <td class="text-center">{{ $item->item_quantity_remaining ?? '-' }}</td>
+          <td>{{ $item->item_name }}</td>
+          <td>
+              @if ($item->category)
+                  <i class="bi {{ $item->category->item_category_icon }} me-1"></i>
+                  {{ $item->category->item_category_name }}
+              @else
+                  -
+              @endif
+          </td>
+          <td>{{ $item->brand ? $item->brand->item_brand_name : '-' }}</td>
+          <td>{{ $item->item_serialno ?? '-' }}</td>
+          <td>{{ $item->uom ? $item->uom->item_uom_name : '-' }}</td>
+          <td>{{ $item->item_quantity ?? '-' }}</td>
+          <td>{{ $item->item_quantity_remaining ?? '-' }}</td>
           {{-- <td>
               @if ($item->item_quantity_status == 'Out of Stock')
                   <span class="badge bg-danger">Out of Stock</span>

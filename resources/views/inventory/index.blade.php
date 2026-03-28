@@ -94,53 +94,212 @@
             </div>
 
             <div class="modal fade" id="category_modal" tabindex="-1">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-lg ">
                     <div class="modal-content">
 
                         <div class="modal-header">
-                            <h4 class="modal-title">Create Category</h4>
+                            <h4 class="modal-title">Manage Categories</h4>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
 
-                        <form action="{{ route('item-category.store') }}" method="POST" class="needs-validation"
-                            novalidate>
-                            @csrf
+                        <div class="modal-body">
+                            <div class="row">
 
-                            <div class="modal-body">
+                                <!-- ================= LEFT: FORM ================= -->
+                                <div class="col-md-6 border-end">
 
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="category_name"
-                                        name="item_category_name" placeholder="Enter Category" required>
-                                    <label for="category_name">Category Name</label>
-                                    <div class="invalid-feedback">
-                                        Please enter a category name.
+                                    <form action="{{ route('item-category.store') }}" method="POST"
+                                        class="needs-validation category-form" novalidate>
+                                        @csrf
+
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="category_name"
+                                                name="item_category_name" placeholder="Enter Category" >
+                                            <label for="category_name">Category Name</label>
+                                            <div class="invalid-feedback">
+                                                Please enter a category name.
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Category Icon</label>
+
+                                            <div class="dropdown w-100">
+                                                <button class="btn btn-outline-secondary w-100 text-start"
+                                                    type="button" id="iconDropdown" data-bs-toggle="dropdown">
+                                                    <i id="selectedIcon" class="bi"></i>
+                                                    <span id="selectedIconText">None</span>
+                                                </button>
+
+                                                <ul class="dropdown-menu w-100"
+                                                    style="max-height: 250px; overflow-y: auto;">
+                                                    <!-- NONE -->
+                                                    <li>
+                                                        <a class="dropdown-item icon-option" href="#"
+                                                            data-value="">
+                                                            None
+                                                        </a>
+                                                    </li>
+
+
+                                                    <!-- COMPUTERS -->
+                                                    <li><a class="dropdown-item icon-option" href="#"
+                                                            data-value="bi-pc-display">
+                                                            <i class="bi bi-pc-display me-2"></i> Desktop PC
+                                                        </a></li>
+
+                                                    <li><a class="dropdown-item icon-option" href="#"
+                                                            data-value="bi-laptop">
+                                                            <i class="bi bi-laptop me-2"></i> Laptop
+                                                        </a></li>
+
+                                                    <li><a class="dropdown-item icon-option" href="#"
+                                                            data-value="bi-display">
+                                                            <i class="bi bi-display me-2"></i> Monitor
+                                                        </a></li>
+
+                                                    <!-- HARDWARE -->
+                                                    <li><a class="dropdown-item icon-option" href="#"
+                                                            data-value="bi-cpu">
+                                                            <i class="bi bi-cpu me-2"></i> CPU / Processor
+                                                        </a></li>
+
+                                                    <li><a class="dropdown-item icon-option" href="#"
+                                                            data-value="bi-hdd">
+                                                            <i class="bi bi-hdd me-2"></i> Hard Drive
+                                                        </a></li>
+
+                                                    <li><a class="dropdown-item icon-option" href="#"
+                                                            data-value="bi-memory">
+                                                            <i class="bi bi-memory me-2"></i> RAM / Memory
+                                                        </a></li>
+
+                                                    <!-- PERIPHERALS -->
+                                                    <li><a class="dropdown-item icon-option" href="#"
+                                                            data-value="bi-keyboard">
+                                                            <i class="bi bi-keyboard me-2"></i> Keyboard
+                                                        </a></li>
+
+                                                    <li><a class="dropdown-item icon-option" href="#"
+                                                            data-value="bi-mouse">
+                                                            <i class="bi bi-mouse me-2"></i> Mouse
+                                                        </a></li>
+
+                                                    <li><a class="dropdown-item icon-option" href="#"
+                                                            data-value="bi-printer">
+                                                            <i class="bi bi-printer me-2"></i> Printer
+                                                        </a></li>
+
+                                                    <!-- NETWORK -->
+                                                    <li><a class="dropdown-item icon-option" href="#"
+                                                            data-value="bi-router">
+                                                            <i class="bi bi-router me-2"></i> Router
+                                                        </a></li>
+
+                                                    <li><a class="dropdown-item icon-option" href="#"
+                                                            data-value="bi-wifi">
+                                                            <i class="bi bi-wifi me-2"></i> WiFi / Network
+                                                        </a></li>
+
+                                                    <li><a class="dropdown-item icon-option" href="#"
+                                                            data-value="bi-hdd-network">
+                                                            <i class="bi bi-hdd-network me-2"></i> Server / NAS
+                                                        </a></li>
+
+                                                    <!-- MOBILE -->
+                                                    <li><a class="dropdown-item icon-option" href="#"
+                                                            data-value="bi-phone">
+                                                            <i class="bi bi-phone me-2"></i> Mobile Phone
+                                                        </a></li>
+
+                                                    <li><a class="dropdown-item icon-option" href="#"
+                                                            data-value="bi-tablet">
+                                                            <i class="bi bi-tablet me-2"></i> Tablet
+                                                        </a></li>
+
+                                                    <!-- GENERAL -->
+                                                    <li><a class="dropdown-item icon-option" href="#"
+                                                            data-value="bi-box-seam">
+                                                            <i class="bi bi-box-seam me-2"></i> General Item
+                                                        </a></li>
+
+                                                    <li><a class="dropdown-item icon-option" href="#"
+                                                            data-value="bi-tools">
+                                                            <i class="bi bi-tools me-2"></i> Tools / Repair
+                                                        </a></li>
+
+                                                </ul>
+                                            </div>
+
+                                            <input type="hidden" name="item_category_icon" id="category_icon">
+                                        </div>
+
+
+
+                                        <button type="submit" class="btn btn-success w-100">Create Category</button>
+
+                                    </form>
+                                </div>
+
+                                <!-- ================= RIGHT: LIST ================= -->
+                                <div class="col-md-6">
+
+                                    <!-- CATEGORY LIST LABEL -->
+                                    <div class="mb-2">
+                                        <label class="form-label fw-bold">
+                                            <i class="bi bi-list-ul me-1"></i> Category List
+                                        </label>
                                     </div>
-                                </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label">Show all Category:</label>
-                                    <select name="item_category_id" class="form-control">
+                                    <!-- SEARCH (FLOATING STYLE) -->
+                                    <div class="form-floating mb-3">
+                                        <input type="text" id="categorySearch" class="form-control"
+                                            placeholder="Search category...">
+                                        <label for="categorySearch">
+                                            <i class="bi bi-search me-1"></i> Search Category
+                                        </label>
+                                    </div>
+
+                                    <!-- CATEGORY LIST -->
+                                    <ul class="list-group shadow-sm rounded" id="categoryList"
+                                        style="max-height: 260px; overflow-y: auto;">
                                         @foreach ($item_categories as $category)
-                                            <option value="{{ $category->item_category_id }}">
-                                                {{ $category->item_category_name }}
-                                            </option>
+                                            <li
+                                                class="list-group-item d-flex justify-content-between align-items-center category-item">
+
+                                                <span class="d-flex align-items-center">
+                                                    @if ($category->item_category_icon)
+                                                        <i
+                                                            class="bi {{ $category->item_category_icon }} me-2 fs-5"></i>
+                                                    @endif
+                                                    {{ $category->item_category_name }}
+                                                </span>
+
+                                                <!-- DELETE -->
+                                                <form
+                                                    action="{{ route('item-category.destroy', $category->item_category_id) }}"
+                                                    method="POST" class="delete-form">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-danger">
+                                                        ✕
+                                                    </button>
+                                                </form>
+
+                                            </li>
                                         @endforeach
-                                    </select>
+
+
+                                    </ul>
+
                                 </div>
 
                             </div>
-
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-outline-light text-dark"
-                                    data-bs-dismiss="modal">Cancel</button>
-                                <button type="submit" class="btn btn-success">Submit</button>
-                            </div>
-                        </form>
+                        </div>
 
                     </div>
                 </div>
             </div>
-
 
             <div class="modal fade" id="item_modal">
                 <div class="modal-dialog modal-lg">
@@ -157,35 +316,46 @@
 
                             <div class="modal-body">
                                 <div class="row">
-                                    <div class="col-md-6 border-end">
-                                        <h6 class="text-muted mb-3"><i class="bi bi-info-circle me-1"></i> Item
-                                            Identification</h6>
 
+                                    <!-- LEFT SIDE -->
+                                    <div class="col-md-6 border-end">
+                                        <h6 class="text-muted mb-3">
+                                            <i class="bi bi-info-circle me-1"></i> Item Identification
+                                        </h6>
+
+                                        <!-- CATEGORY -->
+                                        <div class="form-floating mb-3 position-relative">
+
+                                            <!-- ICON -->
+                                            <i id="categoryIconPreview"
+                                                class="bi position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
+
+                                            <select name="item_category_id" class="form-select ps-5"
+                                                id="item_category_id" required>
+
+                                                <option value="" disabled selected>Select Category</option>
+
+                                                @foreach ($item_categories as $category)
+                                                    <option value="{{ $category->item_category_id }}"
+                                                        data-name="{{ $category->item_category_name }}"
+                                                        data-icon="{{ $category->item_category_icon }}">
+                                                        {{ $category->item_category_name }}
+                                                    </option>
+                                                @endforeach
+
+                                            </select>
+
+                                            <label for="item_category_id" class="ms-4">Category</label>
+                                        </div>
+
+                                        <!-- ITEM NAME -->
                                         <div class="form-floating mb-3">
                                             <input type="text" name="item_name" class="form-control"
                                                 id="item_name" placeholder="Item Name" required>
                                             <label for="item_name">Item Name</label>
-                                            <div class="invalid-feedback">
-                                                Item Name is required.
-                                            </div>
                                         </div>
 
-                                        <div class="form-floating mb-3">
-                                            <select name="item_category_id" class="form-select" id="item_category_id"
-                                                required>
-                                                <option value="" disabled selected>Select Category</option>
-                                                @foreach ($item_categories as $category)
-                                                    <option value="{{ $category->item_category_id }}">
-                                                        {{ $category->item_category_name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <label for="item_category_id">Category</label>
-                                            <div class="invalid-feedback">
-                                                Category is required.
-                                            </div>
-                                        </div>
-
+                                        <!-- BRAND -->
                                         <div class="form-floating mb-3">
                                             <select name="item_brand_name" class="form-select" id="item_brand_name"
                                                 required>
@@ -235,11 +405,9 @@
                                                 <option value="AmazonBasics">AmazonBasics</option>
                                             </select>
                                             <label for="item_brand_name">Brand</label>
-                                            <div class="invalid-feedback">
-                                                Brand is required.
-                                            </div>
                                         </div>
 
+                                        <!-- SERIAL -->
                                         <div class="form-floating mb-3">
                                             <input type="text" name="item_serialno" class="form-control"
                                                 id="item_serialno" placeholder="Serial Number">
@@ -247,23 +415,21 @@
                                         </div>
                                     </div>
 
+                                    <!-- RIGHT SIDE -->
                                     <div class="col-md-6">
-                                        <h6 class="text-muted mb-3"><i class="bi bi-box-seam me-1"></i> Stock
-                                            Information</h6>
+                                        <h6 class="text-muted mb-3">
+                                            <i class="bi bi-box-seam me-1"></i> Stock Information
+                                        </h6>
 
                                         <div class="row">
                                             <div class="col-6">
                                                 <div class="form-floating mb-3">
                                                     <input type="number" name="item_quantity" class="form-control"
-                                                        id="item_quantity" placeholder="Quantity" min="1"
-                                                        max="99" required
-                                                        oninput="this.value=this.value.slice(0,4)">
-                                                    <label for="item_quantity">Quantity</label>
-                                                    <div class="invalid-feedback">
-                                                        Quantity is required.
-                                                    </div>
+                                                        id="item_quantity" min="1" required>
+                                                    <label>Quantity</label>
                                                 </div>
                                             </div>
+
                                             <div class="col-6">
                                                 <div class="form-floating mb-3">
                                                     <select name="item_uom_name" class="form-select"
@@ -276,10 +442,7 @@
                                                         <option value="Pack">Pack</option>
                                                         <option value="Pair">Pair</option>
                                                     </select>
-                                                    <label for="item_uom_name">Unit of Measure</label>
-                                                    <div class="invalid-feedback">
-                                                        UOM is required.
-                                                    </div>
+                                                    <label>Unit of Measure</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -291,11 +454,9 @@
                                                 <option value="Damaged">Damaged</option>
                                                 <option value="Missing">Missing</option>
                                             </select>
-                                            <label for="item_remark">Condition / Remark</label>
-                                            <div class="invalid-feedback">
-                                                Remark is required.
-                                            </div>
+                                            <label>Condition / Remark</label>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -305,6 +466,7 @@
                                     data-bs-dismiss="modal">Cancel</button>
                                 <button type="submit" class="btn btn-success px-4">Save Item</button>
                             </div>
+
                         </form>
 
                     </div>
@@ -312,7 +474,7 @@
             </div>
             <label for="available" style="font-weight: bold; font-size: 18px;">
                 Individual Item Count:
-                <span  style="font-weight:  font-size: 16px;">
+                <span style="font-weight:  font-size: 16px;">
                     {{ $itemCount }}
                 </span>
             </label>
@@ -349,6 +511,255 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+
+            // =========================
+            // DELETE CATEGORY (AJAX)
+            // =========================
+            $(document).on('submit', '.delete-form', function(e) {
+                e.preventDefault();
+
+                let form = this;
+                let url = $(form).attr('action');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'This category will be deleted.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+
+                    if (result.isConfirmed) {
+
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                _method: 'DELETE'
+                            },
+                            success: function() {
+
+                                $(form).closest('li').fadeOut(200, function() {
+                                    $(this).remove();
+                                });
+
+                                Swal.fire({
+                                    toast: true,
+                                    position: 'top-end',
+                                    icon: 'success',
+                                    title: 'Category successfully deleted!',
+                                    showConfirmButton: false,
+                                    timer: 1500,
+                                    timerProgressBar: true
+                                });
+
+                            },
+                            error: function() {
+                                Swal.fire('Error', 'Delete failed.', 'error');
+                            }
+                        });
+
+                    }
+
+                });
+            });
+
+
+            // =========================
+            // ADD CATEGORY (AJAX) 🔥
+            // =========================
+            $(document).on('submit', '.category-form', function(e) {
+                e.preventDefault();
+
+                let form = this;
+                let url = $(form).attr('action');
+
+                // Bootstrap validation
+                let name = $('#category_name').val().trim();
+
+                if (name === '') {
+                    $('#category_name').addClass('is-invalid');
+                    return;
+                }
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: $(form).serialize(),
+
+                    success: function(response) {
+
+                        let icon = response.item_category_icon ?
+                            `<i class="bi ${response.item_category_icon} me-2 fs-5"></i>` :
+                            '';
+
+                        let newItem = `
+                    <li class="list-group-item d-flex justify-content-between align-items-center category-item">
+                        
+                        <span class="d-flex align-items-center">
+                            ${icon}
+                            ${response.item_category_name}
+                        </span>
+
+                        <form action="/item-category/${response.item_category_id}" method="POST" class="delete-form">
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="btn btn-sm btn-danger">✕</button>
+                        </form>
+
+                    </li>
+                `;
+
+                        $('#categoryList').prepend(newItem);
+
+                        // reset form
+                        form.reset();
+                        $('#selectedIcon').attr('class', 'bi');
+                        $('#selectedIconText').text('None');
+
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Category added!',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            timerProgressBar: true
+                        });
+
+                    },
+
+                    error: function(xhr) {
+
+                        if (xhr.status === 422) {
+                            let errors = xhr.responseJSON.errors;
+                            let firstError = Object.values(errors)[0][0];
+
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Validation Error',
+                                text: firstError
+                            });
+                        } else {
+                            Swal.fire('Error', 'Failed to add category.', 'error');
+                        }
+
+                    }
+                });
+
+            });
+
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const searchInput = document.getElementById('categorySearch');
+            const categoryItems = document.querySelectorAll('.category-item');
+
+            if (!searchInput) return;
+
+            // SEARCH (same style as personnel)
+            searchInput.addEventListener('input', function() {
+                let value = this.value.toLowerCase();
+
+                categoryItems.forEach(item => {
+                    item.classList.toggle('d-none',
+                        !item.innerText.toLowerCase().includes(value)
+                    );
+                });
+            });
+
+        });
+        document.querySelectorAll('.icon-option').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const value = this.getAttribute('data-value');
+                const text = this.innerText.trim();
+
+                document.getElementById('category_icon').value = value;
+
+                document.getElementById('selectedIcon').className = 'bi ' + value;
+                document.getElementById('selectedIconText').textContent = text;
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const categorySelect = document.getElementById('item_category_id');
+            const itemNameInput = document.getElementById('item_name');
+            const iconPreview = document.getElementById('categoryIconPreview');
+
+            const itemsData = @json(
+                $items->map(function ($item) {
+                    return [
+                        'name' => $item->item_name,
+                        'category_id' => $item->item_category_id,
+                    ];
+                }));
+
+            let manuallyEdited = false;
+
+            if (!categorySelect || !itemNameInput) return;
+
+            itemNameInput.addEventListener('input', function() {
+                manuallyEdited = true;
+            });
+
+            categorySelect.addEventListener('change', function() {
+
+                const selectedOption = this.options[this.selectedIndex];
+                const categoryName = selectedOption.getAttribute('data-name');
+                const categoryId = this.value;
+                const iconClass = selectedOption.getAttribute('data-icon');
+
+                if (iconPreview) {
+                    iconPreview.className =
+                        'bi position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary';
+
+                    if (iconClass) {
+                        iconPreview.classList.add(iconClass);
+                    } else {
+                        iconPreview.classList.add('bi-question-circle');
+                    }
+                }
+
+                if (!categoryName || !categoryId) return;
+
+                const filtered = itemsData.filter(item => item.category_id == categoryId);
+
+                let maxNumber = 0;
+
+                filtered.forEach(item => {
+                    const match = item.name.match(/(\d+)$/);
+                    if (match) {
+                        const num = parseInt(match[1]);
+                        if (num > maxNumber) maxNumber = num;
+                    }
+                });
+
+                const nextNumber = maxNumber + 1;
+                const formatted = String(nextNumber).padStart(3, '0');
+
+                const generatedName = categoryName + ' ' + formatted;
+
+                if (!manuallyEdited || itemNameInput.value === '') {
+                    itemNameInput.value = generatedName;
+                    manuallyEdited = false;
+                }
+            });
+
+        });
+    </script>
     <script>
         const selectAll = document.getElementById('select_all');
         const bulkDeleteBtn = document.getElementById('bulk_delete_btn');
@@ -488,7 +899,7 @@
             // -------------------------
             // AJAX Duplicate Check on Submit
             // -------------------------
-            $('form.needs-validation').on('submit', function(e) {
+            $('form.needs-validation').not('.category-form').on('submit', function(e) {
                 e.preventDefault(); // prevent default submission
 
                 let form = this;

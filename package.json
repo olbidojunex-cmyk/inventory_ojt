@@ -3,10 +3,9 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build",
-        "dev": "vite",
-        "start": "webpack-dev-server --mode development", 
-        "test": "(eslint lib || true) && jest"
+    "dev": "vite",
+    "build": "vite build",
+    "test": "jest"
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",
